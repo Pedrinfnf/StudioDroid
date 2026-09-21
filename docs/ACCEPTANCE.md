@@ -20,6 +20,26 @@ Record exact created/modified files, git diff --stat and git status. Normal git 
 untracked files; report their statistics separately without staging merely for display.
 After M0 stop and await explicit M1 approval.
 
+## M0 validation record — 2026-09-21
+
+Validated the M0 baseline in commit `dd4f0bb` and the schema corrections in the working
+tree. Four schemas passed Draft 2020-12 meta-validation; 88 fixture checks passed,
+including valid manifests/plans/reports, missing/unknown fields, architecture mismatches,
+traversal, NULs, trailing newlines, URI/date-time formats, unresolved presentation and
+exit/signal/health distinctions. The newline cases exposed `$` accepting a final newline;
+patterns now use a strict end-of-input assertion, `(?![\s\S])`.
+
+Temporary tooling: Python jsonschema 4.17.3, attrs 22.2.0, pyrsistent 0.19.3,
+rfc3339-validator 0.1.4, rfc3986-validator 0.1.1 and six 1.17.0. Node 24.18.0 compiled all
+52 ECMAScript patterns and passed eight focused pattern assertions. Test fixtures and
+validator dependencies stayed outside the repository; they are not runtime payloads.
+
+All six JSON documents passed duplicate-key parsing; metadata invariants, pinned revision
+syntax and the canonical GPL-3.0-only license digest passed. All 51 local Markdown links
+resolved. Whitespace and the 27-file M0 scope passed; application/native/build/workflow
+implementation remains absent. These are document/contract checks, not Android build,
+device, archive-extractor, runtime or Studio qualification.
+
 ## M1–M4 test matrix
 
 | Area | Required scenarios |

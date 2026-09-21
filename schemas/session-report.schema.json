@@ -19,7 +19,7 @@
     },
     "configurationFingerprint": {
       "type": "string",
-      "pattern": "^[a-f0-9]{64}$"
+      "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
     },
     "lastPhase": {
       "enum": [
@@ -145,7 +145,7 @@
           "anyOf": [
             {
               "type": "string",
-              "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+              "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?![\\s\\S])",
               "maxLength": 32
             },
             {
@@ -297,7 +297,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+            "pattern": "^[a-z][a-z0-9._-]{0,127}(?![\\s\\S])"
           },
           "kind": {
             "enum": [
@@ -317,7 +317,7 @@
           },
           "sha256": {
             "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
+            "pattern": "^[a-f0-9]{64}(?![\\s\\S])"
           }
         },
         "required": [
@@ -626,7 +626,7 @@
             "type": "string",
             "minLength": 1,
             "maxLength": 4096,
-            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+$"
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+(?![\\s\\S])"
           },
           "bytes": {
             "type": "integer",
