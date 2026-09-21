@@ -1,0 +1,15 @@
+{
+  "accept": [
+    "{\"name\":\"first\",\"nested\":{\"name\":\"second\"}}",
+    "{\"array\":[{\"id\":1},{\"id\":2}]}"
+  ],
+  "reject": [
+    "{\"kind\":\"running\",\"kind\":\"exited\"}",
+    "{\"result\":{\"errno\":null,\"errno\":13}}",
+    "{\"array\":[{\"id\":1,\"id\":2}]}",
+    "{\"id\":1,\"\\u0069d\":2}",
+    "{\"value\":NaN}",
+    "{\"value\":Infinity}",
+    "{\"value\":-Infinity}"
+  ]
+}

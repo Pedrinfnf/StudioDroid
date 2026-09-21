@@ -1,0 +1,153 @@
+[
+  {
+    "schema": "launch-plan",
+    "pointer": "/$defs/absolutePosixPath/pattern",
+    "accept": [
+      "/",
+      "/tmp/session",
+      "/tmp/project space/日本語",
+      "/tmp/.cache",
+      "/tmp/...",
+      "/tmp/100%literal",
+      "/tmp/line /file"
+    ],
+    "reject": [
+      "",
+      "tmp/a",
+      "//tmp/a",
+      "/tmp//a",
+      "/tmp/a/",
+      "/./a",
+      "/../a",
+      "/tmp/./a",
+      "/tmp/../a",
+      "/tmp/.",
+      "/tmp/..",
+      "/tmp\\a",
+      "/tmp/a\u0000",
+      "/tmp/a\r",
+      "/tmp/a\n",
+      "/tmp/a\t",
+      "/tmp/a",
+      "C:/a",
+      "content://provider/id",
+      "/tmp/line /../escape"
+    ]
+  },
+  {
+    "schema": "launch-plan",
+    "pointer": "/$defs/windowsGuestPath/pattern",
+    "accept": [
+      "C:\\Program Files\\Roblox\\Studio.exe",
+      "C:/Program Files/Studio.exe",
+      "z:\\home\\日本語.exe",
+      "C:\\",
+      "\\\\server\\share\\Studio.exe",
+      "\\\\server\\share",
+      "C:\\...cache\\app.exe"
+    ],
+    "reject": [
+      "",
+      "Studio.exe",
+      "C:Studio.exe",
+      "\\Studio.exe",
+      "C:\\..\\Studio.exe",
+      "C:/app/../Studio.exe",
+      "C:\\app\\.\\Studio.exe",
+      "C:\\app\\..",
+      "C:\\app\\file.exe\u0000",
+      "C:\\app\\file.exe\r",
+      "C:\\app\\file.exe\n",
+      "C:\\app\\file.exe\t",
+      "C:\\app\\file.exe",
+      "C:\\app\\\\file.exe",
+      "C:\\app\\file.exe\\",
+      "C:\\app.\\file.exe",
+      "C:\\app \\file.exe",
+      "C:\\app\\file.exe:stream",
+      "\\\\?\\C:\\app.exe",
+      "\\\\.\\C:\\app.exe",
+      "\\\\server",
+      "\\\\server\\share\\..\\app.exe",
+      "/tmp/file.exe",
+      "content://provider/id"
+    ]
+  },
+  {
+    "schema": "launch-plan",
+    "pointer": "/$defs/relativeComponentPath/pattern",
+    "accept": [
+      "lib/file.so",
+      "share/日本語",
+      "a"
+    ],
+    "reject": [
+      "/lib/file.so",
+      "../file",
+      "lib/./file",
+      "lib//file",
+      "lib/file/",
+      "lib/file\n",
+      "lib/file\u0000",
+      "lib\\file"
+    ]
+  },
+  {
+    "schema": "payload-manifest",
+    "pointer": "/properties/artifact/properties/sha256/pattern",
+    "accept": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ],
+    "reject": [
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+      "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    ]
+  },
+  {
+    "schema": "payload-manifest",
+    "pointer": "/properties/id/pattern",
+    "accept": [
+      "valid-id"
+    ],
+    "reject": [
+      "bad\n",
+      "bad/key",
+      "1bad"
+    ]
+  },
+  {
+    "schema": "launch-plan",
+    "pointer": "/properties/process/properties/arguments/items/pattern",
+    "accept": [
+      "line1\nline2",
+      "a b",
+      ""
+    ],
+    "reject": [
+      "a\u0000b"
+    ]
+  },
+  {
+    "schema": "session-report",
+    "pointer": "/properties/result/oneOf/3/anyOf/1/properties/message/pattern",
+    "accept": [
+      "observed timeout"
+    ],
+    "reject": [
+      "",
+      " \t\n"
+    ]
+  },
+  {
+    "schema": "driver-manifest",
+    "pointer": "/properties/vulkan/properties/minApiVersion/pattern",
+    "accept": [
+      "1.3.0"
+    ],
+    "reject": [
+      "1x3x0",
+      "1.3.0\n"
+    ]
+  }
+]

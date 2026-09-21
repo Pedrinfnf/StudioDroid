@@ -13,7 +13,8 @@ Draft 2020-12 schemas; research-only source inventory and unqualified compatibil
 Validate JSON parsing (including duplicate keys), schema meta-validation, representative
 valid/invalid instances, local Markdown links, whitespace, source-pin format and metadata
 invariants, license integrity, and M0-only file scope. A temporary standard validator or
-scratch test harness is tooling, not an application/runtime component. Do not add app code,
+scratch test harness is tooling, not an application/runtime component. M0.1 additionally
+authorizes the permanent contract-only harness and fixtures below. Do not add app code,
 Gradle/CMake files, workflows, installers or runtime build scripts in M0.
 
 Record exact created/modified files, git diff --stat and git status. Normal git diff omits
@@ -39,6 +40,50 @@ syntax and the canonical GPL-3.0-only license digest passed. All 51 local Markdo
 resolved. Whitespace and the 27-file M0 scope passed; application/native/build/workflow
 implementation remains absent. These are document/contract checks, not Android build,
 device, archive-extractor, runtime or Studio qualification.
+
+## M0.1 reproducible validation
+
+Prerequisites: Python 3.10+, Git and Node.js 18+. From a clean checkout, create a test-only
+virtual environment outside the repository. Installation needs access to PyPI; subsequent
+validation is offline and has no npm dependencies:
+
+```sh
+M0_VENV="$(mktemp -d "${TMPDIR:-/tmp}/studiodroid-m0.XXXXXX")"
+python3 -m venv "$M0_VENV"
+PYRSISTENT_SKIP_EXTENSION=1 "$M0_VENV/bin/python" -m pip install -r tests/m0/requirements.txt
+"$M0_VENV/bin/python" -u scripts/validate_m0.py
+```
+
+The pinned validator dependencies are test tooling only. `PYRSISTENT_SKIP_EXTENSION=1`
+avoids compiling its optional C extension when installing from source. Missing Node or
+URI/date-time/UUID format checkers fail the suite instead of silently skipping checks.
+The harness resolves all paths relative to its own checkout, never to a temporary research
+folder, and refuses remote schema references.
+
+Each schema fixture contains a complete valid `base` plus named cases with an expected
+`valid` boolean and explicit `set`/`remove` path edits. Expectations are stored independently
+of the schemas. The original 88 cases are retained; additional cases cover all result-kind
+code combinations, startup-error evidence, all absolute/relative launch path sites,
+Windows paths and GraphicsDrivers architecture/ABI combinations. Parser fixtures test
+nested/escaped duplicate keys and non-JSON numeric constants; regex fixtures run in Node.
+These files contain synthetic hashes, URLs and observations, never installable payloads
+or device-success evidence. See [result semantics](PAYLOAD_FORMAT.md#session-result-invariants-m01)
+and [launch path rules](RUNTIME_BACKENDS.md).
+
+Validated on 2026-09-21 with Python 3.14.6 and Node 24.18.0: four schema meta-checks,
+416 named valid/invalid fixtures plus four valid bases, 12 strict JSON documents, nine
+parser fixtures, 49 compiled ECMAScript patterns with 87 assertions, 54 local Markdown
+links, metadata/license checks and `git diff --check` all passed. The suite also passed
+from an isolated checkout snapshot, invoked outside that checkout's working directory.
+
+The PyPI installation attempt encountered an environment DNS failure. For these runs,
+the isolated virtual environment used cached upstream sources at the exact dependency
+versions pinned in requirements.txt; no validator code or dependency was copied into this
+repository. The documented network installation command could not be completed here;
+the permanent harness and fixtures themselves ran successfully and offline.
+No Android application, installer, native backend, build pipeline or M1 implementation is
+introduced. Runtime containment, authenticity and real device qualification remain future
+gates; schema acceptance does not replace them.
 
 ## M1–M4 test matrix
 

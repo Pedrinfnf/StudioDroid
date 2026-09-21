@@ -1,0 +1,86 @@
+{
+  "schema": "payload-manifest",
+  "base": {
+    "schemaVersion": 1,
+    "id": "fex",
+    "kind": "FEX",
+    "name": "Fixture",
+    "version": "test-1",
+    "architecture": "arm64",
+    "abi": "linux-glibc",
+    "source": {
+      "url": "https://example.org/source",
+      "revision": "fixture-only"
+    },
+    "artifact": {
+      "delivery": "archive",
+      "format": "tar.gz",
+      "url": "https://example.org/fex.tar.gz",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "downloadBytes": 100,
+      "installedBytes": 200
+    },
+    "compatibility": {
+      "minAndroidApi": 29,
+      "pageSizes": [
+        4096
+      ],
+      "requirements": []
+    },
+    "dependencies": [],
+    "entryPoints": {
+      "main": "bin/FEXInterpreter"
+    },
+    "inventory": {
+      "url": "https://example.org/inventory.json",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "bytes": 100
+    },
+    "licenseIds": [
+      "MIT"
+    ]
+  },
+  "cases": [
+    {"name": "original-01: valid base fixture", "valid": true},
+    {"name": "original-02: ['schemaVersion']2", "valid": false, "set": [{"path": ["schemaVersion"], "value": 2}]},
+    {"name": "original-03: ['unexpected']True", "valid": false, "set": [{"path": ["unexpected"], "value": true}]},
+    {"name": "original-04: missing required", "valid": false, "remove": [["schemaVersion"]]},
+    {"name": "original-17: ['architecture']'x86_64'", "valid": false, "set": [{"path": ["architecture"], "value": "x86_64"}]},
+    {"name": "original-18: ['abi']'windows-pe'", "valid": false, "set": [{"path": ["abi"], "value": "windows-pe"}]},
+    {"name": "original-19: ['artifact', 'sha256']'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'", "valid": false, "set": [{"path": ["artifact"], "value": {"delivery": "archive", "format": "tar.gz", "url": "https://example.org/fex.tar.gz", "sha256": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz", "downloadBytes": 100, "installedBytes": 200}}]},
+    {"name": "original-20: ['artifact', 'sha256']'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n'", "valid": false, "set": [{"path": ["artifact"], "value": {"delivery": "archive", "format": "tar.gz", "url": "https://example.org/fex.tar.gz", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n", "downloadBytes": 100, "installedBytes": 200}}]},
+    {"name": "original-21: ['artifact', 'downloadBytes']0", "valid": false, "set": [{"path": ["artifact"], "value": {"delivery": "archive", "format": "tar.gz", "url": "https://example.org/fex.tar.gz", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "downloadBytes": 0, "installedBytes": 200}}]},
+    {"name": "original-22: ['artifact', 'downloadBytes']1.5", "valid": false, "set": [{"path": ["artifact"], "value": {"delivery": "archive", "format": "tar.gz", "url": "https://example.org/fex.tar.gz", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "downloadBytes": 1.5, "installedBytes": 200}}]},
+    {"name": "original-23: ['artifact', 'delivery']'apk-native'", "valid": false, "set": [{"path": ["artifact"], "value": {"delivery": "apk-native", "format": "tar.gz", "url": "https://example.org/fex.tar.gz", "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "downloadBytes": 100, "installedBytes": 200}}]},
+    {"name": "original-24: ['source', 'url']'http://example.org'", "valid": false, "set": [{"path": ["source"], "value": {"url": "http://example.org", "revision": "fixture-only"}}]},
+    {"name": "original-25: ['id']'fex\\n'", "valid": false, "set": [{"path": ["id"], "value": "fex\n"}]},
+    {"name": "original-26: ['compatibility', 'pageSizes'][4096, 4096]", "valid": false, "set": [{"path": ["compatibility"], "value": {"minAndroidApi": 29, "pageSizes": [4096, 4096], "requirements": []}}]},
+    {"name": "original-27: ['entryPoints', 'main']'../evil'", "valid": false, "set": [{"path": ["entryPoints"], "value": {"main": "../evil"}}]},
+    {"name": "original-28: ['entryPoints', 'main']'/etc/passwd'", "valid": false, "set": [{"path": ["entryPoints"], "value": {"main": "/etc/passwd"}}]},
+    {"name": "original-29: ['entryPoints', 'main']'bin/../evil'", "valid": false, "set": [{"path": ["entryPoints"], "value": {"main": "bin/../evil"}}]},
+    {"name": "original-30: ['entryPoints', 'main']'bin/./evil'", "valid": false, "set": [{"path": ["entryPoints"], "value": {"main": "bin/./evil"}}]},
+    {"name": "original-31: ['entryPoints', 'main']'bin//evil'", "valid": false, "set": [{"path": ["entryPoints"], "value": {"main": "bin//evil"}}]},
+    {"name": "original-32: ['entryPoints', 'main']'bin\\\\evil'", "valid": false, "set": [{"path": ["entryPoints"], "value": {"main": "bin\\evil"}}]},
+    {"name": "original-33: ['entryPoints', 'main']'bin/\\x00evil'", "valid": false, "set": [{"path": ["entryPoints"], "value": {"main": "bin/\u0000evil"}}]},
+    {"name": "original-34: ['entryPoints', 'main']'bin/evil\\n'", "valid": false, "set": [{"path": ["entryPoints"], "value": {"main": "bin/evil\n"}}]},
+    {"name": "original-35: ['entryPoints', 'main']'bin/evil\\r'", "valid": false, "set": [{"path": ["entryPoints"], "value": {"main": "bin/evil\r"}}]},
+    {"name": "original-36: ['entryPoints', 'main']'bin/test'", "valid": true, "set": [{"path": ["entryPoints"], "value": {"main": "bin/test"}}]},
+    {"name": "original-37: ['entryPoints', 'main']'bin/renderer'", "valid": true, "set": [{"path": ["entryPoints"], "value": {"main": "bin/renderer"}}]},
+    {"name": "original-38: ['entryPoints', 'main']'bin/x00'", "valid": true, "set": [{"path": ["entryPoints"], "value": {"main": "bin/x00"}}]},
+    {"name": "original-39: ['entryPoints', 'main']'bin/тест'", "valid": true, "set": [{"path": ["entryPoints"], "value": {"main": "bin/тест"}}]},
+    {"name": "original-85: ['source', 'url']'https://bad host/path'", "valid": false, "set": [{"path": ["source"], "value": {"url": "https://bad host/path", "revision": "fixture-only"}}]},
+    {"name": "original-86: ['source', 'url']'https://example.org/\\\\n'", "valid": false, "set": [{"path": ["source"], "value": {"url": "https://example.org/\\n", "revision": "fixture-only"}}]},
+    {"name": "original-88: ['source', 'url']'https://example.org/source?q=1'", "valid": true, "set": [{"path": ["source"], "value": {"url": "https://example.org/source?q=1", "revision": "fixture-only"}}]},
+    {"name": "GraphicsDrivers arm64/android-bionic", "valid": true, "set": [{"path": ["kind"], "value": "GraphicsDrivers"}, {"path": ["architecture"], "value": "arm64"}, {"path": ["abi"], "value": "android-bionic"}]},
+    {"name": "GraphicsDrivers arm64/linux-glibc", "valid": true, "set": [{"path": ["kind"], "value": "GraphicsDrivers"}, {"path": ["architecture"], "value": "arm64"}, {"path": ["abi"], "value": "linux-glibc"}]},
+    {"name": "GraphicsDrivers arm64/windows-pe", "valid": false, "set": [{"path": ["kind"], "value": "GraphicsDrivers"}, {"path": ["architecture"], "value": "arm64"}, {"path": ["abi"], "value": "windows-pe"}]},
+    {"name": "GraphicsDrivers x86_64/android-bionic", "valid": false, "set": [{"path": ["kind"], "value": "GraphicsDrivers"}, {"path": ["architecture"], "value": "x86_64"}, {"path": ["abi"], "value": "android-bionic"}]},
+    {"name": "GraphicsDrivers x86_64/linux-glibc", "valid": false, "set": [{"path": ["kind"], "value": "GraphicsDrivers"}, {"path": ["architecture"], "value": "x86_64"}, {"path": ["abi"], "value": "linux-glibc"}]},
+    {"name": "GraphicsDrivers x86_64/windows-pe", "valid": false, "set": [{"path": ["kind"], "value": "GraphicsDrivers"}, {"path": ["architecture"], "value": "x86_64"}, {"path": ["abi"], "value": "windows-pe"}]},
+    {"name": "other payload still valid: ARM64Rootfs", "valid": true, "set": [{"path": ["kind"], "value": "ARM64Rootfs"}, {"path": ["architecture"], "value": "arm64"}, {"path": ["abi"], "value": "linux-glibc"}]},
+    {"name": "other payload still valid: X86_64Rootfs", "valid": true, "set": [{"path": ["kind"], "value": "X86_64Rootfs"}, {"path": ["architecture"], "value": "x86_64"}, {"path": ["abi"], "value": "linux-glibc"}]},
+    {"name": "other payload still valid: Wine", "valid": true, "set": [{"path": ["kind"], "value": "Wine"}, {"path": ["architecture"], "value": "x86_64"}, {"path": ["abi"], "value": "linux-glibc"}]},
+    {"name": "other payload still valid: DXVK", "valid": true, "set": [{"path": ["kind"], "value": "DXVK"}, {"path": ["architecture"], "value": "x86_64"}, {"path": ["abi"], "value": "windows-pe"}]},
+    {"name": "other payload still valid: Studio", "valid": true, "set": [{"path": ["kind"], "value": "Studio"}, {"path": ["architecture"], "value": "x86_64"}, {"path": ["abi"], "value": "windows-pe"}]}
+  ]
+}

@@ -96,10 +96,7 @@
               "pattern": "^[a-z][a-z0-9._-]{0,127}(?![\\s\\S])"
             },
             "path": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 4096,
-              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+(?![\\s\\S])"
+              "$ref": "#/$defs/relativeComponentPath"
             }
           },
           "required": [
@@ -142,9 +139,7 @@
               ]
             },
             "path": {
-              "type": "string",
-              "pattern": "^/[^\\x00\\r\\n]*(?![\\s\\S])",
-              "maxLength": 4096
+              "$ref": "#/$defs/absolutePosixPath"
             }
           },
           "required": [
@@ -175,7 +170,8 @@
             "path": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 4096
+              "maxLength": 4096,
+              "pattern": "^[^\\x00-\\x1f\\x7f]*(?![\\s\\S])"
             },
             "componentId": {
               "type": "string",
@@ -199,9 +195,14 @@
               "then": {
                 "properties": {
                   "path": {
-                    "type": "string",
-                    "pattern": "^/[^\\x00\\r\\n]*(?![\\s\\S])",
-                    "maxLength": 4096
+                    "$ref": "#/$defs/absolutePosixPath"
+                  }
+                }
+              },
+              "else": {
+                "properties": {
+                  "path": {
+                    "$ref": "#/$defs/windowsGuestPath"
                   }
                 }
               }
@@ -228,10 +229,7 @@
                 "pattern": "^[a-z][a-z0-9._-]{0,127}(?![\\s\\S])"
               },
               "path": {
-                "type": "string",
-                "minLength": 1,
-                "maxLength": 4096,
-                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+(?![\\s\\S])"
+                "$ref": "#/$defs/relativeComponentPath"
               }
             },
             "required": [
@@ -240,9 +238,7 @@
             ]
           },
           "target": {
-            "type": "string",
-            "pattern": "^/[^\\x00\\r\\n]*(?![\\s\\S])",
-            "maxLength": 4096
+            "$ref": "#/$defs/absolutePosixPath"
           },
           "readOnlyRequested": {
             "type": "boolean"
@@ -313,10 +309,7 @@
                     "pattern": "^[a-z][a-z0-9._-]{0,127}(?![\\s\\S])"
                   },
                   "path": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 4096,
-                    "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+(?![\\s\\S])"
+                    "$ref": "#/$defs/relativeComponentPath"
                   }
                 },
                 "required": [
@@ -359,9 +352,7 @@
                     ]
                   },
                   "path": {
-                    "type": "string",
-                    "pattern": "^/[^\\x00\\r\\n]*(?![\\s\\S])",
-                    "maxLength": 4096
+                    "$ref": "#/$defs/absolutePosixPath"
                   }
                 },
                 "required": [
@@ -578,9 +569,7 @@
           "const": "host-posix"
         },
         "path": {
-          "type": "string",
-          "pattern": "^/[^\\x00\\r\\n]*(?![\\s\\S])",
-          "maxLength": 4096
+          "$ref": "#/$defs/absolutePosixPath"
         }
       },
       "required": [
@@ -631,5 +620,25 @@
         }
       }
     }
-  ]
+  ],
+  "$defs": {
+    "absolutePosixPath": {
+      "type": "string",
+      "maxLength": 4096,
+      "pattern": "^(?![\\s\\S]*(?:^|/)\\.\\.?(?:/|(?![\\s\\S])))/(?:[^/\\\\\\x00-\\x1f\\x7f]+(?:/[^/\\\\\\x00-\\x1f\\x7f]+)*)?(?![\\s\\S])",
+      "description": "Normalized absolute POSIX path: root is allowed; no dot segments, repeated/trailing separators, backslashes or C0/DEL controls. Runtime containment remains mandatory."
+    },
+    "relativeComponentPath": {
+      "type": "string",
+      "maxLength": 4096,
+      "pattern": "^(?![\\s\\S]*(?:^|/)\\.\\.?(?:/|(?![\\s\\S])))[^/\\\\\\x00-\\x1f\\x7f]+(?:/[^/\\\\\\x00-\\x1f\\x7f]+)*(?![\\s\\S])",
+      "description": "Normalized nonempty component-relative POSIX path. Runtime must resolve beneath the verified component without link escapes."
+    },
+    "windowsGuestPath": {
+      "type": "string",
+      "maxLength": 4096,
+      "pattern": "^(?:[A-Za-z]:[\\\\/](?:[^\\\\/\\x00-\\x1f\\x7f<>:\"|?*]*[^\\\\/\\x00-\\x1f\\x7f<>:\"|?* .](?:[\\\\/][^\\\\/\\x00-\\x1f\\x7f<>:\"|?*]*[^\\\\/\\x00-\\x1f\\x7f<>:\"|?* .])*)?|\\\\\\\\[^\\\\/\\x00-\\x1f\\x7f<>:\"|?*]*[^\\\\/\\x00-\\x1f\\x7f<>:\"|?* .][\\\\/][^\\\\/\\x00-\\x1f\\x7f<>:\"|?*]*[^\\\\/\\x00-\\x1f\\x7f<>:\"|?* .](?:[\\\\/][^\\\\/\\x00-\\x1f\\x7f<>:\"|?*]*[^\\\\/\\x00-\\x1f\\x7f<>:\"|?* .])*)(?![\\s\\S])",
+      "description": "Drive-absolute or UNC Win32 path, with no controls, dot segments, empty components, trailing dots/spaces, device namespaces or alternate data streams. Runtime must resolve Wine drive/share mappings and enforce containment."
+    }
+  }
 }

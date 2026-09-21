@@ -38,6 +38,12 @@ that downloaded archives can exec from writable private storage. Through M4, hos
 entry points can remain APK-delivered while guest/data components update independently.
 Studio records describe official runtime retrieval, never permission to redistribute.
 
+`GraphicsDrivers` identifies native ARM64 userspace driver payloads: `arm64` with either
+`android-bionic` or `linux-glibc`. Both transport possibilities remain open; Windows PE
+and x86_64 driver payloads are rejected. Guest-side FEX thunks remain part of the matched
+runtime components, not native driver packages. This rule does not qualify a GPU, loader,
+WSI or glibc/Bionic bridge; those checks remain mandatory at runtime.
+
 Keep large per-file inventories in separately hashed, bounded, streamed metadata rather
 than one giant in-memory manifest. Each inventory record declares normalized path, type,
 size, digest and contained link target where permitted. Reject duplicate/colliding paths.
@@ -115,3 +121,24 @@ path containment, duplicate JSON keys/inventory entries, source allowlists, depe
 cycles, hardware features and live resources at the correct boundary. Schema formats
 must be checked with a format-aware validator. A report is evidence only when produced
 by the real supervised operation; passing a JSON test does not establish runtime health.
+
+## Session result invariants (M0.1)
+
+Every result retains the required `kind`, `exitCode`, `signal`, `errno` and `message`
+keys. An unobserved or inapplicable value is explicit JSON `null`, never an invented zero.
+
+| Kind | exitCode | signal | errno | Evidence rule |
+| --- | --- | --- | --- | --- |
+| running | null | null | null | No terminal result observed |
+| exited | observed integer 0–255 | null | null | Supervisor observed normal exit |
+| signaled | null | observed integer 1–255 | null | Supervisor observed signal termination |
+| start-failed | null | null | observed positive startup errno or null | Require errno or a nonblank message describing an observed startup failure |
+| cancelled | null | null | null | Cancellation outcome without an observed process exit/signal |
+| unknown | null | null | null | Termination information unavailable |
+
+`errno` is reserved for startup errors, not a process exit status or signal substitute.
+A confirmed readiness timeout or validation refusal may use `start-failed`, null errno
+and a descriptive message. Missing supervision evidence alone remains `unknown`, even
+when a crash is suspected. If cancellation leads to an observed exit or signal, report
+that terminal kind and retain cancellation context in the message/logs. A message cannot
+supply fabricated numeric evidence. These shape checks cannot prove an observation.

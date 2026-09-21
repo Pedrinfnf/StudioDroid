@@ -42,6 +42,21 @@ cycles immediately before execution. A schema-valid JSON file is not authorizati
 The runtime validates the original plan; diagnostic exports redact secrets and are not
 re-imported as executable plans.
 
+M0.1 path shape rules apply to the main/helper cwd, guest target, mount target and
+diagnostic directory. POSIX paths are absolute and normalized: `/` is valid, but dot
+segments, empty components, trailing separators (except root), backslashes and C0/DEL
+controls are rejected. Component-relative executable/mount-source paths use the same
+component restrictions and cannot start with `/`.
+
+Windows guest targets are drive-absolute or UNC paths. Drive paths accept Windows or
+forward-slash separators; UNC paths begin with two backslashes and name a server/share.
+Reject C0/DEL controls (including NUL, CR and LF), dot/empty components, trailing dots or
+spaces, device namespaces, reserved delimiters and alternate data streams. Relative and
+drive-relative Windows paths are not persisted. Runtime still validates Wine drive/share
+mappings, reserved device names, symlinks, mount permissions and containment immediately
+before use. Validating `/`, a mapped drive or a UNC share does not authorize access to it;
+never treat string-prefix matching or schema acceptance as containment enforcement.
+
 Cancellation cannot leave a half-active configuration. Reject concurrent launches for
 one session/controller. UI reattachment observes an existing session; it cannot create a
 second container. Preserve start errors, errno, signal and normal exit separately.

@@ -40,6 +40,7 @@ modules. Future build tools and independent runtime pipelines are specified in
 The four files in `schemas/` use JSON Schema Draft 2020-12. Validate their schemas with
 a conforming validator, check local Markdown links and `git diff --check`, and enforce
 the research-only metadata invariants in [Payload format](docs/PAYLOAD_FORMAT.md).
+Run the permanent M0.1 contract suite using the [reproducible validation commands](docs/ACCEPTANCE.md#m01-reproducible-validation).
 Physical-device and runtime tests are explicitly deferred to their milestones.
 
 ## License and upstream software

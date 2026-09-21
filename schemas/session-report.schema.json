@@ -496,46 +496,121 @@
         "errno",
         "message"
       ],
-      "allOf": [
+      "description": "All fields remain present. Null means no observed value. Only start-failed may carry startup errno; a message never substitutes for an observed process exit or signal.",
+      "oneOf": [
         {
-          "if": {
-            "properties": {
-              "kind": {
-                "const": "exited"
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "exitCode": {
-                "type": "integer",
-                "minimum": 0,
-                "maximum": 255
-              },
-              "signal": {
-                "type": "null"
-              }
+          "properties": {
+            "kind": {
+              "const": "running"
+            },
+            "exitCode": {
+              "type": "null"
+            },
+            "signal": {
+              "type": "null"
+            },
+            "errno": {
+              "type": "null"
             }
           }
         },
         {
-          "if": {
-            "properties": {
-              "kind": {
-                "const": "signaled"
-              }
+          "properties": {
+            "kind": {
+              "const": "exited"
+            },
+            "exitCode": {
+              "type": "integer"
+            },
+            "signal": {
+              "type": "null"
+            },
+            "errno": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "signaled"
+            },
+            "exitCode": {
+              "type": "null"
+            },
+            "signal": {
+              "type": "integer"
+            },
+            "errno": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "start-failed"
+            },
+            "exitCode": {
+              "type": "null"
+            },
+            "signal": {
+              "type": "null"
+            },
+            "errno": {
+              "type": [
+                "integer",
+                "null"
+              ]
             }
           },
-          "then": {
-            "properties": {
-              "signal": {
-                "type": "integer",
-                "minimum": 1,
-                "maximum": 255
-              },
-              "exitCode": {
-                "type": "null"
+          "anyOf": [
+            {
+              "properties": {
+                "errno": {
+                  "type": "integer"
+                }
               }
+            },
+            {
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "pattern": "\\S"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "cancelled"
+            },
+            "exitCode": {
+              "type": "null"
+            },
+            "signal": {
+              "type": "null"
+            },
+            "errno": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "unknown"
+            },
+            "exitCode": {
+              "type": "null"
+            },
+            "signal": {
+              "type": "null"
+            },
+            "errno": {
+              "type": "null"
             }
           }
         }

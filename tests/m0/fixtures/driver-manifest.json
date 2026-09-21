@@ -1,0 +1,76 @@
+{
+  "schema": "driver-manifest",
+  "base": {
+    "schemaVersion": 1,
+    "id": "test-driver",
+    "name": "Fixture",
+    "version": "test-1",
+    "author": "Test",
+    "source": {
+      "url": "https://example.org/source",
+      "revision": "fixture-only"
+    },
+    "architecture": "arm64",
+    "abi": "android-bionic",
+    "gpu": {
+      "vendor": "Adreno",
+      "families": [
+        "test-family"
+      ],
+      "models": []
+    },
+    "kernelInterfaces": [
+      "test-kernel"
+    ],
+    "minAndroidApi": 29,
+    "pageSizes": [
+      4096
+    ],
+    "vulkan": {
+      "minApiVersion": "1.3.0",
+      "requiredExtensions": [],
+      "requiredFeatures": [],
+      "minimumLimits": {}
+    },
+    "driverType": "android-vulkan-driver",
+    "loaderAbiVersion": 1,
+    "transports": [
+      "native-direct"
+    ],
+    "libraries": [
+      {
+        "path": "lib/driver.so",
+        "bytes": 100,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "metadata": [],
+    "licenses": [
+      {
+        "path": "licenses/MIT.txt",
+        "bytes": 100,
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "knownIssues": [],
+    "compatibilityNotes": []
+  },
+  "cases": [
+    {"name": "original-05: valid base fixture", "valid": true},
+    {"name": "original-06: ['schemaVersion']2", "valid": false, "set": [{"path": ["schemaVersion"], "value": 2}]},
+    {"name": "original-07: ['unexpected']True", "valid": false, "set": [{"path": ["unexpected"], "value": true}]},
+    {"name": "original-08: missing required", "valid": false, "remove": [["schemaVersion"]]},
+    {"name": "original-40: ['architecture']'x86_64'", "valid": false, "set": [{"path": ["architecture"], "value": "x86_64"}]},
+    {"name": "original-41: ['gpu', 'vendor']'NVIDIA'", "valid": false, "set": [{"path": ["gpu"], "value": {"vendor": "NVIDIA", "families": ["test-family"], "models": []}}]},
+    {"name": "original-42: ['gpu', 'families'][]", "valid": false, "set": [{"path": ["gpu"], "value": {"vendor": "Adreno", "families": [], "models": []}}]},
+    {"name": "original-43: ['vulkan', 'minApiVersion']'1x3x0'", "valid": false, "set": [{"path": ["vulkan"], "value": {"minApiVersion": "1x3x0", "requiredExtensions": [], "requiredFeatures": [], "minimumLimits": {}}}]},
+    {"name": "original-44: ['vulkan', 'minApiVersion']'1.3.0\\n'", "valid": false, "set": [{"path": ["vulkan"], "value": {"minApiVersion": "1.3.0\n", "requiredExtensions": [], "requiredFeatures": [], "minimumLimits": {}}}]},
+    {"name": "original-45: ['abi']'linux-glibc'", "valid": false, "set": [{"path": ["abi"], "value": "linux-glibc"}]},
+    {"name": "original-46: ['libraries', 0, 'path']'metadata/driver.so'", "valid": false, "set": [{"path": ["libraries"], "value": [{"path": "metadata/driver.so", "bytes": 100, "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}]}]},
+    {"name": "original-47: ['libraries', 0, 'path']'lib/../evil'", "valid": false, "set": [{"path": ["libraries"], "value": [{"path": "lib/../evil", "bytes": 100, "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}]}]},
+    {"name": "original-48: ['libraries', 0, 'path']'lib/evil\\n'", "valid": false, "set": [{"path": ["libraries"], "value": [{"path": "lib/evil\n", "bytes": 100, "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}]}]},
+    {"name": "original-49: ['libraries', 0, 'sha256']'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\\n'", "valid": false, "set": [{"path": ["libraries"], "value": [{"path": "lib/driver.so", "bytes": 100, "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"}]}]},
+    {"name": "original-50: ['licenses'][]", "valid": false, "set": [{"path": ["licenses"], "value": []}]},
+    {"name": "original-51: shape allows Mali but does not qualify driver", "valid": true, "set": [{"path": ["gpu"], "value": {"vendor": "Mali", "families": ["test-family"], "models": []}}]}
+  ]
+}

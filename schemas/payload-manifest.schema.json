@@ -358,6 +358,29 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "GraphicsDrivers"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "architecture": {
+            "const": "arm64"
+          },
+          "abi": {
+            "enum": [
+              "android-bionic",
+              "linux-glibc"
+            ]
+          }
+        },
+        "$comment": "Native ARM64 userspace Vulkan drivers. Bionic and glibc transports remain possible; x86 guest thunks belong to their runtime components, not this driver package."
+      }
     }
   ]
 }
