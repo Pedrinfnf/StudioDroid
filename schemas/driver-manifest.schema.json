@@ -1,0 +1,380 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:studiodroid:schema:driver-manifest:1",
+  "title": "StudioDroid driver-manifest v1",
+  "description": "Future package declaration only. No universal GPU support or authorization to load native code. Resolve duplicate paths, trust and actual ABI in the importer/probe.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "author": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "maxLength": 2048
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "url",
+        "revision"
+      ]
+    },
+    "architecture": {
+      "const": "arm64"
+    },
+    "abi": {
+      "enum": [
+        "android-bionic",
+        "linux-glibc"
+      ]
+    },
+    "gpu": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "vendor": {
+          "enum": [
+            "Adreno",
+            "Mali",
+            "PowerVR",
+            "Unknown/Other"
+          ]
+        },
+        "families": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "models": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "vendor",
+        "families",
+        "models"
+      ]
+    },
+    "kernelInterfaces": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "minAndroidApi": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 999
+    },
+    "pageSizes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          4096,
+          16384
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 2,
+      "uniqueItems": true
+    },
+    "vulkan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minApiVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "maxLength": 32
+        },
+        "requiredExtensions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true
+        },
+        "requiredFeatures": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true
+        },
+        "minimumLimits": {
+          "type": "object",
+          "maxProperties": 128,
+          "propertyNames": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0
+          }
+        }
+      },
+      "required": [
+        "minApiVersion",
+        "requiredExtensions",
+        "requiredFeatures",
+        "minimumLimits"
+      ]
+    },
+    "driverType": {
+      "enum": [
+        "vulkan-icd",
+        "android-vulkan-driver"
+      ]
+    },
+    "loaderAbiVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "transports": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+      },
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "libraries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+$",
+            "allOf": [
+              {
+                "pattern": "^lib/"
+              }
+            ]
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 256
+    },
+    "metadata": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+$",
+            "allOf": [
+              {
+                "pattern": "^metadata/"
+              }
+            ]
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 64
+    },
+    "licenses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+$",
+            "allOf": [
+              {
+                "pattern": "^licenses/"
+              }
+            ]
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "path",
+          "bytes",
+          "sha256"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 128
+    },
+    "knownIssues": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048
+      },
+      "minItems": 0,
+      "maxItems": 128
+    },
+    "compatibilityNotes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2048
+      },
+      "minItems": 0,
+      "maxItems": 128
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "name",
+    "version",
+    "author",
+    "source",
+    "architecture",
+    "abi",
+    "gpu",
+    "kernelInterfaces",
+    "minAndroidApi",
+    "pageSizes",
+    "vulkan",
+    "driverType",
+    "loaderAbiVersion",
+    "transports",
+    "libraries",
+    "metadata",
+    "licenses",
+    "knownIssues",
+    "compatibilityNotes"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "driverType": {
+            "const": "android-vulkan-driver"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "abi": {
+            "const": "android-bionic"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "abi": {
+            "const": "linux-glibc"
+          }
+        }
+      }
+    }
+  ]
+}

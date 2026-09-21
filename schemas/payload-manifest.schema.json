@@ -1,0 +1,363 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:studiodroid:schema:payload-manifest:1",
+  "title": "StudioDroid payload-manifest v1",
+  "description": "Immutable release metadata. No installed/healthy state is implied. Trust, inventory, path and actual ELF checks require runtime validation.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+    },
+    "kind": {
+      "enum": [
+        "ARM64Rootfs",
+        "X86_64Rootfs",
+        "FEX",
+        "Wine",
+        "DXVK",
+        "GraphicsDrivers",
+        "Studio"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "architecture": {
+      "enum": [
+        "arm64",
+        "x86_64"
+      ]
+    },
+    "abi": {
+      "enum": [
+        "android-bionic",
+        "linux-glibc",
+        "windows-pe"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "maxLength": 2048
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "url",
+        "revision"
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "delivery": {
+          "enum": [
+            "archive",
+            "apk-native"
+          ]
+        },
+        "format": {
+          "enum": [
+            "tar.gz",
+            "zip",
+            "apk"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "maxLength": 2048
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "downloadBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "installedBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "delivery",
+        "format",
+        "url",
+        "sha256",
+        "downloadBytes",
+        "installedBytes"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "delivery": {
+                "const": "apk-native"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "format": {
+                "const": "apk"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "format": {
+                "enum": [
+                  "tar.gz",
+                  "zip"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "minAndroidApi": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 999
+        },
+        "pageSizes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              4096,
+              16384
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "minAndroidApi",
+        "pageSizes",
+        "requirements"
+      ]
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+          },
+          "kind": {
+            "enum": [
+              "ARM64Rootfs",
+              "X86_64Rootfs",
+              "FEX",
+              "Wine",
+              "DXVK",
+              "GraphicsDrivers",
+              "Studio"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "version",
+          "sha256"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 128,
+      "uniqueItems": true
+    },
+    "entryPoints": {
+      "type": "object",
+      "maxProperties": 64,
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 4096,
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+$"
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "maxLength": 2048
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "url",
+        "sha256",
+        "bytes"
+      ]
+    },
+    "licenseIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "minItems": 1,
+      "maxItems": 128,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "kind",
+    "name",
+    "version",
+    "architecture",
+    "abi",
+    "source",
+    "artifact",
+    "compatibility",
+    "dependencies",
+    "entryPoints",
+    "inventory",
+    "licenseIds"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "FEX",
+              "ARM64Rootfs"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "architecture": {
+            "const": "arm64"
+          },
+          "abi": {
+            "const": "linux-glibc"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "Wine",
+              "X86_64Rootfs"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "architecture": {
+            "const": "x86_64"
+          },
+          "abi": {
+            "const": "linux-glibc"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "DXVK",
+              "Studio"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "architecture": {
+            "const": "x86_64"
+          },
+          "abi": {
+            "const": "windows-pe"
+          }
+        }
+      }
+    }
+  ]
+}

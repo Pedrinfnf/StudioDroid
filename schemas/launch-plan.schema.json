@@ -1,0 +1,635 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:studiodroid:schema:launch-plan:1",
+  "title": "StudioDroid launch-plan v1",
+  "description": "Structured plan, never a shell command or execution authorization. FD roles must resolve freshly; runtime enforces allowlists, containment, references and readiness.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "sessionId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "configurationFingerprint": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "validationState": {
+      "enum": [
+        "draft",
+        "validated"
+      ]
+    },
+    "runtimeBackend": {
+      "enum": [
+        "fex",
+        "box64"
+      ]
+    },
+    "containerBackend": {
+      "enum": [
+        "namespace",
+        "proot"
+      ]
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+          },
+          "kind": {
+            "enum": [
+              "ARM64Rootfs",
+              "X86_64Rootfs",
+              "FEX",
+              "Wine",
+              "DXVK",
+              "GraphicsDrivers",
+              "Studio"
+            ]
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "version",
+          "sha256"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "process": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "executable": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "storage": {
+              "enum": [
+                "apk-native",
+                "component"
+              ]
+            },
+            "componentId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096,
+              "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+$"
+            }
+          },
+          "required": [
+            "storage",
+            "componentId",
+            "path"
+          ]
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 8192,
+            "pattern": "^[^\\x00]*$"
+          },
+          "minItems": 0,
+          "maxItems": 256
+        },
+        "environment": {
+          "type": "object",
+          "maxProperties": 128,
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[A-Z_][A-Z0-9_]{0,127}$"
+          },
+          "additionalProperties": {
+            "type": "string",
+            "maxLength": 8192,
+            "pattern": "^[^\\x00]*$"
+          }
+        },
+        "workingDirectory": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "space": {
+              "enum": [
+                "host-posix",
+                "guest-posix"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "pattern": "^/[^\\x00\\r\\n]*$",
+              "maxLength": 4096
+            }
+          },
+          "required": [
+            "space",
+            "path"
+          ]
+        }
+      },
+      "required": [
+        "executable",
+        "arguments",
+        "environment",
+        "workingDirectory"
+      ]
+    },
+    "guestTarget": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "space": {
+              "enum": [
+                "guest-posix",
+                "windows"
+              ]
+            },
+            "path": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            "componentId": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+            }
+          },
+          "required": [
+            "space",
+            "path",
+            "componentId"
+          ],
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "space": {
+                    "const": "guest-posix"
+                  }
+                }
+              },
+              "then": {
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "pattern": "^/[^\\x00\\r\\n]*$",
+                    "maxLength": 4096
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "mounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "componentId": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4096,
+                "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+$"
+              }
+            },
+            "required": [
+              "componentId",
+              "path"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "pattern": "^/[^\\x00\\r\\n]*$",
+            "maxLength": 4096
+          },
+          "readOnlyRequested": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source",
+          "target",
+          "readOnlyRequested"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 128
+    },
+    "fdSlots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+          },
+          "access": {
+            "enum": [
+              "read",
+              "write",
+              "read-write"
+            ]
+          }
+        },
+        "required": [
+          "role",
+          "access"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 64,
+      "uniqueItems": true
+    },
+    "services": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+          },
+          "process": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "executable": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "storage": {
+                    "enum": [
+                      "apk-native",
+                      "component"
+                    ]
+                  },
+                  "componentId": {
+                    "type": "string",
+                    "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+                  },
+                  "path": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 4096,
+                    "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)[^\\\\\\x00\\r\\n]+$"
+                  }
+                },
+                "required": [
+                  "storage",
+                  "componentId",
+                  "path"
+                ]
+              },
+              "arguments": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "maxLength": 8192,
+                  "pattern": "^[^\\x00]*$"
+                },
+                "minItems": 0,
+                "maxItems": 256
+              },
+              "environment": {
+                "type": "object",
+                "maxProperties": 128,
+                "propertyNames": {
+                  "type": "string",
+                  "pattern": "^[A-Z_][A-Z0-9_]{0,127}$"
+                },
+                "additionalProperties": {
+                  "type": "string",
+                  "maxLength": 8192,
+                  "pattern": "^[^\\x00]*$"
+                }
+              },
+              "workingDirectory": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "space": {
+                    "enum": [
+                      "host-posix",
+                      "guest-posix"
+                    ]
+                  },
+                  "path": {
+                    "type": "string",
+                    "pattern": "^/[^\\x00\\r\\n]*$",
+                    "maxLength": 4096
+                  }
+                },
+                "required": [
+                  "space",
+                  "path"
+                ]
+              }
+            },
+            "required": [
+              "executable",
+              "arguments",
+              "environment",
+              "workingDirectory"
+            ]
+          },
+          "dependsOn": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9._-]{0,127}$"
+            },
+            "minItems": 0,
+            "maxItems": 32,
+            "uniqueItems": true
+          },
+          "readiness": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "enum": [
+                  "process-started",
+                  "control-message",
+                  "guest-result",
+                  "surface-ready"
+                ]
+              },
+              "token": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 256
+              },
+              "timeoutMs": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 3600000
+              }
+            },
+            "required": [
+              "kind",
+              "token",
+              "timeoutMs"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "process",
+          "dependsOn",
+          "readiness"
+        ]
+      },
+      "minItems": 0,
+      "maxItems": 32
+    },
+    "readiness": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "process-started",
+              "control-message",
+              "guest-result",
+              "surface-ready"
+            ]
+          },
+          "token": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "timeoutMs": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3600000
+          }
+        },
+        "required": [
+          "kind",
+          "token",
+          "timeoutMs"
+        ]
+      },
+      "minItems": 1,
+      "maxItems": 32
+    },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "profile": {
+          "enum": [
+            "LOW_MEMORY",
+            "BALANCED",
+            "PERFORMANCE"
+          ]
+        },
+        "logQueueBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        },
+        "ioBufferBytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1048576
+        }
+      },
+      "required": [
+        "profile",
+        "logQueueBytes",
+        "ioBufferBytes"
+      ]
+    },
+    "timeouts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "startMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3600000
+        },
+        "stopGraceMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60000
+        },
+        "killWaitMs": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 60000
+        }
+      },
+      "required": [
+        "startMs",
+        "stopGraceMs",
+        "killWaitMs"
+      ]
+    },
+    "presentation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "backend": {
+          "enum": [
+            "none",
+            "native-surface"
+          ]
+        },
+        "transport": {
+          "enum": [
+            "none",
+            "unresolved",
+            "internal-x11",
+            "native-direct",
+            "internal-wayland"
+          ]
+        }
+      },
+      "required": [
+        "backend",
+        "transport"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "backend": {
+                "const": "none"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "transport": {
+                "const": "none"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "transport": {
+                "enum": [
+                  "unresolved",
+                  "internal-x11",
+                  "native-direct",
+                  "internal-wayland"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "diagnosticDirectory": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "space": {
+          "const": "host-posix"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^/[^\\x00\\r\\n]*$",
+          "maxLength": 4096
+        }
+      },
+      "required": [
+        "space",
+        "path"
+      ]
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "sessionId",
+    "configurationFingerprint",
+    "validationState",
+    "runtimeBackend",
+    "containerBackend",
+    "components",
+    "process",
+    "guestTarget",
+    "mounts",
+    "fdSlots",
+    "services",
+    "readiness",
+    "resources",
+    "timeouts",
+    "presentation",
+    "diagnosticDirectory"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "validationState": {
+            "const": "validated"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "presentation": {
+            "properties": {
+              "transport": {
+                "not": {
+                  "const": "unresolved"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

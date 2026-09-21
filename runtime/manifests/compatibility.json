@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "state": "unqualified",
+  "description": "Policy defaults only; no device or runtime combination has passed qualification.",
+  "qualifiedConfigurations": [],
+  "runtimeBackends": [
+    {
+      "id": "fex",
+      "status": "unverified",
+      "qualificationMilestone": "M4"
+    },
+    {
+      "id": "box64",
+      "status": "future-experimental",
+      "qualificationMilestone": null
+    }
+  ],
+  "containerBackends": [
+    {
+      "id": "namespace",
+      "status": "unverified",
+      "qualificationMilestone": "M3"
+    },
+    {
+      "id": "proot",
+      "status": "unverified",
+      "qualificationMilestone": "M3"
+    }
+  ],
+  "gpuDefaults": [
+    {
+      "vendor": "Adreno",
+      "provider": "system",
+      "qualified": false,
+      "customDriverPolicy": "Only explicitly compatible, validated Adreno packages; never use Turnip on other GPU vendors"
+    },
+    {
+      "vendor": "Mali",
+      "provider": "system",
+      "qualified": false,
+      "customDriverPolicy": "Custom activation requires explicit ABI, kernel, GPU and transport qualification"
+    },
+    {
+      "vendor": "PowerVR",
+      "provider": "system",
+      "qualified": false,
+      "customDriverPolicy": "Custom activation requires explicit ABI, kernel, GPU and transport qualification"
+    },
+    {
+      "vendor": "Unknown/Other",
+      "provider": "system",
+      "qualified": false,
+      "customDriverPolicy": "Custom activation requires explicit ABI, kernel, GPU and transport qualification"
+    }
+  ],
+  "profiles": {
+    "lowMemoryBelowPhysicalBytes": 5368709120,
+    "androidLowRamForcesLowMemory": true,
+    "unknownProfile": "LOW_MEMORY",
+    "defaultProfile": "BALANCED",
+    "performanceAtLeastPhysicalBytes": 9663676416,
+    "performanceRequiresQualifiedGraphics": true
+  },
+  "presentation": {
+    "backend": "native-surface",
+    "transport": "unresolved",
+    "qualificationMilestone": "M6",
+    "owner": "StudioDroid",
+    "internalX11": "optional-owned-implementation-detail",
+    "termuxX11RuntimeDependency": false,
+    "externalXServerDependency": false,
+    "productionXvfbCpuBitmapCopy": false
+  },
+  "constraints": {
+    "rootRequired": false,
+    "selinuxChangesAllowed": false,
+    "obsoleteTargetSdkFallbackAllowed": false,
+    "customMaliDriverImplementationInScope": false
+  }
+}

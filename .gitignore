@@ -24,6 +24,7 @@ captures/
 *.obj
 *.class
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 
 # Downloaded runtime payloads
 *.exe
@@ -33,6 +34,8 @@ captures/
 *.tar
 *.tar.gz
 *.tar.xz
+*.tar.zst
+*.zst
 *.tgz
 
 # Logs / temp
@@ -45,3 +48,17 @@ captures/
 # OS
 .DS_Store
 Thumbs.db
+
+# Generated runtime staging, reports, and release artifacts
+/artifacts/
+/reports/
+/runtime/staging/
+
+# Local signing material (public verification keys may be committed explicitly)
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.key
+keystore.properties
+signing.properties

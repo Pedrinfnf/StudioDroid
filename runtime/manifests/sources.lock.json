@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "state": "research-only",
+  "buildable": false,
+  "reviewedOn": "2026-09-20",
+  "description": "Inspected source inventory only. No runtime build or release is qualified. Builders must reject this state.",
+  "sources": [
+    {
+      "id": "vodka",
+      "role": "architecture-reference",
+      "url": "https://github.com/Shellworks-Development/vodka",
+      "revision": "ca41f2b074fb82a5dc203411c234ebf18b455d9c",
+      "licenseStatus": "GPLv3; file-level review required before reuse",
+      "incorporated": false
+    },
+    {
+      "id": "zalithlauncher2",
+      "role": "architecture-reference",
+      "url": "https://github.com/ZalithLauncher/ZalithLauncher2",
+      "revision": "1bef4ab9c49ee98db46c4fa39a6ea7b74dfac0b3",
+      "licenseStatus": "GPLv3-family; file-level and modification notices require review",
+      "incorporated": false
+    },
+    {
+      "id": "fex",
+      "role": "runtime-source-candidate",
+      "url": "https://github.com/FEX-Emu/FEX",
+      "revision": "48d71752e2a363d5535181f803b0b0e9666c1825",
+      "licenseStatus": "MIT; transitive dependency audit pending",
+      "incorporated": false
+    },
+    {
+      "id": "termux-x11",
+      "role": "research-only",
+      "url": "https://github.com/termux/termux-x11",
+      "revision": "bd1cfadd74f98b548662a48b6e1d564aa434c86e",
+      "licenseStatus": "Not incorporated; research reference only",
+      "incorporated": false
+    }
+  ],
+  "artifacts": [],
+  "unresolvedBuildInputs": [
+    "Exact Android dependency/toolchain patch versions and verification hashes at M1",
+    "Source-built archive parser and signature verifier dependencies at M2",
+    "Ubuntu 24.04 ARM64 and x86_64 signed package snapshots, package closures and image digests",
+    "Proot/bootstrap source and dependency pins",
+    "FEX recursive submodule pins and Linux ARM64 toolchain/container digest",
+    "Reproducible artifact digests, inventories, SBOMs and corresponding-source packages",
+    "Release catalog trust root, signature algorithm, rotation and freshness policy"
+  ],
+  "releaseRequirements": [
+    "Locked source, submodule, toolchain and authenticated package inputs",
+    "Actual artifact hashes and byte counts; no placeholder digests",
+    "Successful independent repeat builds and ABI/loader checks",
+    "Applicable milestone evidence under installed app UID",
+    "Separate reviewed signing/publication step"
+  ]
+}

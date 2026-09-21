@@ -1,0 +1,34 @@
+StudioDroid v2
+Copyright (C) 2026 StudioDroid contributors
+
+StudioDroid-owned code, documentation and schemas are licensed under the GNU
+General Public License, version 3 only (SPDX-License-Identifier: GPL-3.0-only).
+The complete license is in LICENSE. Upstream material retains its own license.
+
+M0 contains original architectural documentation and declarative schemas. No
+runtime source or binary from Vodka, ZalithLauncher2, FEX, Wine, DXVK, Termux:X11,
+Mesa, or Roblox has been incorporated. Research references are credited in
+docs/REFERENCES.md and docs/research/. Termux:X11 is research-only, not a runtime
+or application dependency.
+
+Before distributing future upstream components, retain their copyright/license
+notices, record exact revisions and modifications, audit transitive dependencies,
+and provide corresponding source/build instructions as required. A rootfs has
+multiple package licenses, not one umbrella license. Generate per-release SBOMs
+and notices. Directory/process separation alone does not decide license obligations.
+
+Vodka: GPLv3; preserve applicable notices for any adapted source.
+ZalithLauncher2: GPLv3-family source; inspect its modification/branding notices
+and inherited attributions before adapting any file.
+FEX: MIT, with dependencies requiring their own audit.
+Wine: LGPL-2.1-or-later; preserve applicable source/relinking rights.
+DXVK: zlib/libpng license; preserve origin and mark modifications.
+Proot, glibc, archive libraries and driver/rootfs packages: audit exact pinned
+versions before incorporation or distribution.
+
+Architectural study is not a statement that source has been reused. Actual future
+reuse must be recorded with source URL, revision, paths, changes and license.
+
+Roblox and Roblox Studio are trademarks of Roblox Corporation. No Roblox code,
+assets, binaries, authentication material, or signing secrets are distributed
+here. StudioDroid is not affiliated with or endorsed by Roblox Corporation.
