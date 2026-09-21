@@ -1,0 +1,47 @@
+# Gradle
+.gradle/
+**/.gradle/
+build/
+**/build/
+
+# Android
+local.properties
+.cxx/
+**/.cxx/
+captures/
+.externalNativeBuild/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Generated binaries
+*.apk
+*.aab
+*.so
+*.o
+*.obj
+*.class
+*.jar
+
+# Downloaded runtime payloads
+*.exe
+*.msi
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.tar.xz
+*.tgz
+
+# Logs / temp
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
