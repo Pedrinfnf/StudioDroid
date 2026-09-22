@@ -5,8 +5,15 @@ on:
     paths: ['app/**', 'core/**', 'runtime/android/**', 'gradle/**', '*.gradle.kts', 'gradle.properties', 'gradlew*', 'schemas/**', 'tests/**', 'scripts/**', 'docs/**', '.github/workflows/android.yml']
   pull_request:
   workflow_dispatch:
+    inputs:
+      baseline_run:
+        description: 'Optional existing QA run ID for an idle-memory comparison'
+        required: false
+        default: ''
+        type: string
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: android-${{ github.ref }}
   cancel-in-progress: true
@@ -63,6 +70,10 @@ jobs:
       - name: Enable emulator acceleration
         run: sudo chmod 666 /dev/kvm
       - name: Test Activity recreation and capture the launcher
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          STUDIODROID_BASELINE_RUN: ${{ inputs.baseline_run }}
         uses: ReactiveCircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2
         with:
           api-level: 35

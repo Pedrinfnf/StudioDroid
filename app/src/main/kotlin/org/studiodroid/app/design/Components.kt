@@ -48,7 +48,7 @@ class TechnicalValue(context: Context, value: String, size: Float = 21f) : andro
     init { text = value; textSize = size; setTextColor(StudioTheme.text); typeface = Typeface.MONOSPACE; includeFontPadding = false }
 }
 fun icon(context: Context, resource: Int, color: Int = StudioTheme.cyan, size: Int = 24) = ImageView(context).apply {
-    setImageResource(resource); imageTintList = ColorStateList.valueOf(color)
+    setImageResource(resource); imageTintList = if (resource == R.drawable.ic_launcher) null else ColorStateList.valueOf(color)
     layoutParams = LinearLayout.LayoutParams(context.dp(size), context.dp(size))
     importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
 }
@@ -57,7 +57,7 @@ fun LinearLayout.line(view: View, top: Int = 0) { addView(view, LinearLayout.Lay
 
 class SectionHeader(context: Context, title: String, caption: String? = null) : LinearLayout(context) {
     init {
-        orientation = VERTICAL; setPadding(0, context.dp(14), 0, context.dp(4))
+        orientation = VERTICAL; setPadding(0, context.dp(10), 0, context.dp(4))
         line(context.label(title, 17f, StudioTheme.text, true).apply { ViewCompat.setAccessibilityHeading(this, true) })
         caption?.let { line(context.label(it, 12f, muted), 5) }
     }
@@ -80,8 +80,21 @@ open class StatusRow(context: Context, title: String, description: String, resou
 class RuntimeStage(context: Context, title: String, description: String, resource: Int, badge: Badge, last: Boolean, version: String? = null) : LinearLayout(context) {
     init {
         orientation = VERTICAL
-        line(StatusRow(context, title, description, resource, badge, version))
-        if (!last) addView(View(context).apply { setBackgroundColor(border); importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO }, LayoutParams(context.dp(2), context.dp(12)).apply { marginStart = context.dp(26) })
+        val compact = context.resources.configuration.fontScale <= 1.3f && context.resources.configuration.screenWidthDp >= 360
+        line(LinearLayout(context).apply {
+            orientation = HORIZONTAL; gravity = Gravity.CENTER_VERTICAL
+            background = context.shape(radius = 12)
+            setPadding(context.dp(12), context.dp(12), context.dp(12), context.dp(12))
+            addView(icon(context, resource, badge.tone.color, 20))
+            addView(context.column().apply {
+                line(context.label(title, 14f, StudioTheme.text, true))
+                if (description.isNotBlank()) line(context.label(description, 11f, muted), 4)
+                version?.let { line(TechnicalValue(context, it, 11f), 4) }
+                if (!compact) addView(StatusChip(context, badge), LayoutParams(-2, -2).apply { topMargin = context.dp(8) })
+            }, LayoutParams(0, -2, 1f).apply { marginStart = context.dp(10); marginEnd = context.dp(8) })
+            if (compact) addView(StatusChip(context, badge), LayoutParams(-2, -2))
+        })
+        if (!last) addView(View(context).apply { setBackgroundColor(border); importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_NO }, LayoutParams(context.dp(2), context.dp(10)).apply { marginStart = context.dp(22) })
     }
 }
 class MetricCard(context: Context, metric: Metric) : LinearLayout(context) {

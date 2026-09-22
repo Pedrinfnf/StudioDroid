@@ -2,7 +2,8 @@
 package org.studiodroid.app
 
 import android.graphics.Rect
-import android.os.ParcelFileDescriptor
+import android.content.ContentValues
+import android.provider.MediaStore
 import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +20,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.studiodroid.app.design.LogPresentation
 import org.studiodroid.core.DeviceProfile
-import java.io.File
 
 /** Captures actual Android views, including compact, large-font and landscape CI runs. */
 @RunWith(AndroidJUnit4::class)
@@ -116,13 +116,20 @@ class LauncherVisualTest {
     }
     private fun capture(name: String) {
         val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
-        val context = instrumentation.targetContext
-        val file = File(context.filesDir, "qa-screen.png")
-        try { file.outputStream().use { check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)) } }
-        finally { bitmap.recycle() }
-        // Test-only fixed-path shell transfer; survives AGP uninstalling the test app.
-        val command = "mkdir -p /sdcard/Download/studiodroid-qa; run-as org.studiodroid.app cat files/qa-screen.png > /sdcard/Download/studiodroid-qa/$name.png"
-        ParcelFileDescriptor.AutoCloseInputStream(instrumentation.uiAutomation.executeShellCommand("sh -c '$command'")).use { while(it.read() != -1) {} }
-        file.delete()
+        val resolver = instrumentation.targetContext.contentResolver
+        val values = ContentValues().apply {
+            put(MediaStore.Downloads.DISPLAY_NAME, "$name.png")
+            put(MediaStore.Downloads.MIME_TYPE, "image/png")
+            put(MediaStore.Downloads.RELATIVE_PATH, "Download/studiodroid-qa")
+            put(MediaStore.Downloads.IS_PENDING, 1)
+        }
+        val uri = checkNotNull(resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values))
+        try {
+            checkNotNull(resolver.openOutputStream(uri)).use {
+                check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it))
+            }
+            values.clear(); values.put(MediaStore.Downloads.IS_PENDING, 0)
+            check(resolver.update(uri, values, null, null) == 1)
+        } finally { bitmap.recycle() }
     }
 }

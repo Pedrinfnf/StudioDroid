@@ -62,12 +62,12 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
         }
     }
     fun clear() { rows.clear(); cachedTail = ""; cachedEntries = emptyList(); adapter.submitList(emptyList()); list.recycledViewPool.clear() }
-    private fun row(key: String, content: Any, create: () -> View) { rows += DisplayRow("$destination/$key", content, create) }
+    private fun row(key: String, content: Any, gap: Int = 10, create: () -> View) { rows += DisplayRow("$destination/$key", content, gap, create) }
     fun section(title: String, detail: String? = null) = row("section-$title", listOf(title, detail)) { SectionHeader(context, title, detail) }
     fun note(key: String, message: String) = row("note-$key", message) { context.label(message, 12f, muted).apply { setPadding(context.dp(2), 0, context.dp(2), context.dp(4)) } }
     fun notice(message: String) = status("notice-$message", "Launcher notice", message, R.drawable.ic_about, Badge("ATTENTION", Tone.CAUTION))
     fun status(key: String, title: String, detail: String, icon: Int, badge: Badge, version: String? = null) = row(key, listOf(title, detail, badge, version)) { StatusRow(context, title, detail, icon, badge, version) }
-    fun stage(key: String, title: String, detail: String, icon: Int, badge: Badge, last: Boolean = false, version: String? = null) = row(key, listOf(title, detail, badge, version, last)) { RuntimeStage(context, title, detail, icon, badge, last, version) }
+    fun stage(key: String, title: String, detail: String, icon: Int, badge: Badge, last: Boolean = false, version: String? = null) = row(key, listOf(title, detail, badge, version, last), if (last) 10 else 0) { RuntimeStage(context, title, detail, icon, badge, last, version) }
     fun empty(key: String, title: String, detail: String, icon: Int, badge: Badge = Badge("FUTURE", Tone.PLANNED)) = row(key, listOf(title, detail, badge)) { EmptyState(context, title, detail, icon, badge) }
     fun primary(label: String, enabled: Boolean, action: () -> Unit = {}) = row("primary-$label", listOf(label, enabled)) { PrimaryAction(context, label, enabled, action = action) }
     fun secondary(label: String, enabled: Boolean = true, icon: Int = R.drawable.ic_refresh, action: () -> Unit) = row("secondary-$label", listOf(label, enabled)) { SecondaryAction(context, label, enabled, icon, action) }
@@ -79,21 +79,24 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
             row("metric-${group.first().label}", group) {
                 LinearLayout(context).apply {
                     orientation = LinearLayout.HORIZONTAL; gravity = Gravity.TOP
-                    group.forEachIndexed { index, metric -> addView(MetricCard(context, metric), LinearLayout.LayoutParams(0, -2, 1f).apply { if (index > 0) marginStart = context.dp(10) }) }
+                    group.forEachIndexed { index, metric -> addView(MetricCard(context, metric), LinearLayout.LayoutParams(0, -1, 1f).apply { if (index > 0) marginStart = context.dp(10) }) }
                 }
             }
         }
     }
     fun hero(title: String, subtitle: String, badge: Badge, detail: String) = row("hero", listOf(title, subtitle, badge, detail)) {
-        context.column(20).apply {
-            background = context.shape(raised, 0xFF315078.toInt(), 20)
-            val header = LinearLayout(context).apply { gravity = Gravity.CENTER_VERTICAL
-                addView(icon(context, R.drawable.ic_launcher, cyan, 42))
-                addView(context.label("STUDIO / DROID", 12f, cyan, true), LinearLayout.LayoutParams(0, -2, 1f).apply { marginStart = context.dp(12) })
-            }
-            line(header); gap(18); line(context.label(title, 28f, StudioTheme.text, true)); line(context.label(subtitle, 12f, muted), 6)
-            addView(StatusChip(context, badge), LinearLayout.LayoutParams(-2, -2).apply { topMargin = context.dp(16) })
-            line(context.label(detail, 13f, muted), 10)
+        context.column(16).apply {
+            background = context.shape(raised, 0xFF315078.toInt(), 16)
+            line(LinearLayout(context).apply {
+                gravity = Gravity.CENTER_VERTICAL
+                addView(icon(context, R.drawable.ic_launcher, cyan, 40))
+                addView(context.column().apply {
+                    line(context.label(title, 22f, StudioTheme.text, true))
+                    line(context.label(subtitle, 11f, muted), 5)
+                }, LinearLayout.LayoutParams(0, -2, 1f).apply { marginStart = context.dp(12) })
+            })
+            addView(StatusChip(context, badge), LinearLayout.LayoutParams(-2, -2).apply { topMargin = context.dp(14) })
+            line(context.label(detail, 12f, muted), 8)
         }
     }
     fun profiles(selected: DeviceProfile?, enabled: Boolean, action: (DeviceProfile?) -> Unit) {

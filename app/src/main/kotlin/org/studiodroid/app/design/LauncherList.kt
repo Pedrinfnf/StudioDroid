@@ -11,12 +11,12 @@ import org.studiodroid.app.design.StudioTheme.dp
 
 /** Immutable display descriptions; only visible rows create Android views. */
 data class DisplayContent(val value: Any)
-data class DisplayRow(val key: String, val content: DisplayContent, val create: () -> View) {
-    constructor(key: String, content: Any, create: () -> View) : this(key, DisplayContent(content), create)
+data class DisplayRow(val key: String, val content: DisplayContent, val gap: Int = 10, val create: () -> View) {
+    constructor(key: String, content: Any, gap: Int = 10, create: () -> View) : this(key, DisplayContent(content), gap, create)
 }
 class LauncherList : ListAdapter<DisplayRow, LauncherList.Holder>(object : DiffUtil.ItemCallback<DisplayRow>() {
     override fun areItemsTheSame(old: DisplayRow, new: DisplayRow) = old.key == new.key
-    override fun areContentsTheSame(old: DisplayRow, new: DisplayRow) = old.content == new.content
+    override fun areContentsTheSame(old: DisplayRow, new: DisplayRow) = old.content == new.content && old.gap == new.gap
 }) {
     class Holder(val host: FrameLayout) : RecyclerView.ViewHolder(host)
     override fun onCreateViewHolder(parent: ViewGroup, type: Int) = Holder(FrameLayout(parent.context).apply {
@@ -24,6 +24,7 @@ class LauncherList : ListAdapter<DisplayRow, LauncherList.Holder>(object : DiffU
         setPadding(0, 0, 0, context.dp(10))
     })
     override fun onBindViewHolder(holder: Holder, position: Int) {
+        holder.host.setPadding(0, 0, 0, holder.host.context.dp(getItem(position).gap))
         holder.host.removeAllViews(); holder.host.addView(getItem(position).create(), FrameLayout.LayoutParams(-1, -2))
     }
     override fun onViewRecycled(holder: Holder) { holder.host.removeAllViews() }
