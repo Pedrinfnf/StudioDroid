@@ -62,3 +62,6 @@ Thumbs.db
 *.key
 keystore.properties
 signing.properties
+
+# Kotlin compiler session state
+.kotlin/

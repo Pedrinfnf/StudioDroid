@@ -75,8 +75,8 @@ and local signing material. Schema tests are M0 validation, not an installer imp
 
 `android.yml` validates M0, Gradle configuration, core/runtime/app unit tests, Android lint,
 debug APK assembly and instrumentation APK compilation. It verifies the debug APK signature
-and uploads APK/checksum/reports. Instrumentation execution requires an Android device;
-compiling its APK is not a passing lifecycle test.
+and uploads APK/checksum/reports. An Android 35 x86_64 emulator runs the Activity
+recreation test and captures the launcher UI; this is not ARM64 runtime qualification.
 
 `native.yml` compiles a JNI type/ABI boundary against the pinned Android ARM64 NDK and
 CMake 3.22.1. This compile-only static library is neither packaged nor loaded by M1.

@@ -52,13 +52,15 @@ Tools 36.0.0 archives were verified against Google's repository metadata. Gradle
 and distribution SHA-256 values were checked against upstream.
 
 M0/M0.1: four schemas, 416 fixtures, four bases, nine parser cases, 49 ECMAScript patterns
-and 87 assertions passed. Android project configuration/build-host results are recorded
-below when completed. No result is inferred from source inspection.
+and 87 assertions passed. Local Gradle configuration passed. All 20 JVM tests passed: DeviceProfilePolicy (6),
+MemoryPolicy (4), LaunchPlanner (8), and RotatingLogStore (2). Runtime Android Kotlin
+compilation also passed. No result is inferred from source inspection.
 
 The default Maven Central hostname initially failed DNS. Local-only Gradle init tooling
 uses Maven Central's official repo1 endpoint; repository build configuration is unchanged.
 Local Gradle native/instrumentation integration was disabled only for the Termux host JVM;
 no Android target, runtime architecture or tool version was downgraded.
 
-Pending: final Gradle/unit/lint/APK/native CI results and physical-device lifecycle/UI
-measurements. The 4 GB memory budgets are design targets, not measured qualification.
+Pending: final lint/APK/native CI and emulator lifecycle results, plus physical-device
+UI and memory measurements. The CI emulator is x86_64 and cannot qualify ARM64 runtime
+compatibility; it tests only launcher UI lifecycle. The 4 GB memory budgets are design targets, not measured qualification.
