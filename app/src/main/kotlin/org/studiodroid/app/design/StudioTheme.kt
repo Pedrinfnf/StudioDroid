@@ -32,7 +32,7 @@ object StudioTheme {
     fun Context.label(value: String, size: Float = 14f, color: Int = text, bold: Boolean = false) = MaterialTextView(this).apply {
         text = value; textSize = size; setTextColor(color); includeFontPadding = false
         if (bold) typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-        breakStrategy = android.text.Layout.BREAK_STRATEGY_HIGH_QUALITY
+        breakStrategy = android.graphics.text.LineBreaker.BREAK_STRATEGY_HIGH_QUALITY
     }
     fun Context.column(padding: Int = 0) = LinearLayout(this).apply {
         orientation = LinearLayout.VERTICAL; setPadding(dp(padding), dp(padding), dp(padding), dp(padding))

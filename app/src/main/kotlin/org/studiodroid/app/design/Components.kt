@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
+// These views require display data and are constructed by PageBuilder, never XML inflation.
+@file:android.annotation.SuppressLint("ViewConstructor")
 package org.studiodroid.app.design
 
 import android.content.Context
@@ -97,7 +99,7 @@ open class PrimaryAction(context: Context, label: String, enabled: Boolean, reso
         minHeight = context.dp(54); cornerRadius = context.dp(12); insetTop = 0; insetBottom = 0
         setTextColor(ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled), intArrayOf()), intArrayOf(0xFF9BB7DC.toInt(), StudioTheme.text)))
         backgroundTintList = ColorStateList(arrayOf(intArrayOf(-android.R.attr.state_enabled), intArrayOf()), intArrayOf(0xFF172D49.toInt(), 0xFF235CE8.toInt()))
-        icon = context.getDrawable(resource); iconTint = textColors; iconGravity = ICON_GRAVITY_TEXT_START
+        icon = androidx.appcompat.content.res.AppCompatResources.getDrawable(context, resource); iconTint = textColors; iconGravity = ICON_GRAVITY_TEXT_START
         setOnClickListener { action() }
     }
 }

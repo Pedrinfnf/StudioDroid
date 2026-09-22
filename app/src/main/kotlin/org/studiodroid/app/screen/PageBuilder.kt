@@ -5,7 +5,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -146,7 +146,7 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
     fun link(title: String, detail: String, url: String) {
         row("link-$title", listOf(title, detail, url)) {
             StatusRow(context, title, detail, R.drawable.ic_link, Badge("OPEN LINK", Tone.INFO)).apply {
-                clickSurface { try { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) } catch (_: android.content.ActivityNotFoundException) { Toast.makeText(context, "No browser available", Toast.LENGTH_SHORT).show() } }
+                clickSurface { try { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) } catch (_: android.content.ActivityNotFoundException) { Toast.makeText(context, "No browser available", Toast.LENGTH_SHORT).show() } }
                 contentDescription = "$title. $detail. Open link"
             }
         }

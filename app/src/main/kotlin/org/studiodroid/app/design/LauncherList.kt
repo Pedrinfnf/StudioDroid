@@ -10,7 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import org.studiodroid.app.design.StudioTheme.dp
 
 /** Immutable display descriptions; only visible rows create Android views. */
-data class DisplayRow(val key: String, val content: Any, val create: () -> View)
+data class DisplayContent(val value: Any)
+data class DisplayRow(val key: String, val content: DisplayContent, val create: () -> View) {
+    constructor(key: String, content: Any, create: () -> View) : this(key, DisplayContent(content), create)
+}
 class LauncherList : ListAdapter<DisplayRow, LauncherList.Holder>(object : DiffUtil.ItemCallback<DisplayRow>() {
     override fun areItemsTheSame(old: DisplayRow, new: DisplayRow) = old.key == new.key
     override fun areContentsTheSame(old: DisplayRow, new: DisplayRow) = old.content == new.content
