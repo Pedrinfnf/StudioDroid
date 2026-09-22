@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -73,6 +73,17 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -memory 2048
           script: |
             ./gradlew --no-daemon :app:connectedDebugAndroidTest
+            mkdir -p app/build/reports/ui
+            adb pull /sdcard/Download/studiodroid-qa app/build/reports/ui/phone
+            adb shell wm size 900x1600
+            adb shell settings put system font_scale 1.6
+            ./gradlew --no-daemon :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.studiodroid.app.LauncherVisualTest -Pandroid.testInstrumentationRunnerArguments.visualVariant=large-font
+            adb pull /sdcard/Download/studiodroid-qa app/build/reports/ui/large-font
+            adb shell settings put system font_scale 1.0
+            adb shell wm size 1920x1080
+            ./gradlew --no-daemon :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=org.studiodroid.app.LauncherVisualTest -Pandroid.testInstrumentationRunnerArguments.visualVariant=landscape
+            adb pull /sdcard/Download/studiodroid-qa app/build/reports/ui/landscape
+            adb shell wm size reset
             adb install -r app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -W -n org.studiodroid.app/.MainActivity
             adb shell input keyevent KEYCODE_HOME

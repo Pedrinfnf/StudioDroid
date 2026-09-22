@@ -1,8 +1,7 @@
-<resources>
-    <style name="Theme.StudioDroid" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#B3C5FF</item>
-        <item name="colorSecondary">#B7C9DC</item>
-        <item name="android:fontFamily">sans</item>
-        <item name="android:windowLightStatusBar">false</item>
-    </style>
-</resources>
+<resources><style name="Theme.StudioDroid" parent="Theme.Material3.Dark.NoActionBar">
+<item name="colorPrimary">#72B3FF</item><item name="colorOnPrimary">#061326</item><item name="colorSecondary">#4DE0F0</item>
+<item name="colorSurface">#101B2C</item><item name="colorOnSurface">#ECF4FF</item><item name="colorOnSurfaceVariant">#A0B2CD</item>
+<item name="android:colorBackground">#080F1D</item><item name="android:windowBackground">#080F1D</item>
+<item name="android:fontFamily">sans</item><item name="android:windowLightStatusBar">false</item><item name="android:windowLightNavigationBar">false</item>
+<item name="android:statusBarColor">#080F1D</item><item name="android:navigationBarColor">#080F1D</item><item name="android:windowActionModeOverlay">true</item>
+</style></resources>

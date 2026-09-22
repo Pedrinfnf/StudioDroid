@@ -14,6 +14,7 @@ test-runner = "1.6.2"
 test-junit = "1.2.1"
 
 [libraries]
+androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version = "1.4.0" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }

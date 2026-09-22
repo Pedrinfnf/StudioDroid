@@ -1,11 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_home" android:title="@string/home" />
-        <item android:id="@+id/nav_runtime" android:title="@string/runtime" />
-        <item android:id="@+id/nav_diagnostics" android:title="@string/diagnostics" />
-        <item android:id="@+id/nav_storage" android:title="@string/storage" />
-        <item android:id="@+id/nav_logs" android:title="@string/logs" />
-        <item android:id="@+id/nav_settings" android:title="@string/settings" />
-        <item android:id="@+id/nav_about" android:title="@string/about" />
+        <item android:id="@+id/nav_home" android:icon="@drawable/ic_home" android:title="@string/home" />
+        <item android:id="@+id/nav_runtime" android:icon="@drawable/ic_runtime" android:title="@string/runtime" />
+        <item android:id="@+id/nav_diagnostics" android:icon="@drawable/ic_diagnostics" android:title="@string/diagnostics" />
+        <item android:id="@+id/nav_storage" android:icon="@drawable/ic_storage" android:title="@string/storage" />
+        <item android:id="@+id/nav_logs" android:icon="@drawable/ic_logs" android:title="@string/logs" />
+        <item android:id="@+id/nav_settings" android:icon="@drawable/ic_settings" android:title="@string/settings" />
+        <item android:id="@+id/nav_about" android:icon="@drawable/ic_about" android:title="@string/about" />
     </group>
 </menu>

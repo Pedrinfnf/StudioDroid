@@ -7,7 +7,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.NestedScrollView
+import androidx.activity.SystemBarStyle
+import org.studiodroid.app.design.StudioTheme
+import org.studiodroid.app.design.StudioTheme.dp
+import org.studiodroid.app.design.StudioTheme.column
+import org.studiodroid.app.design.StudioTheme.label
+import org.studiodroid.app.design.icon
+import org.studiodroid.app.design.line
+import org.studiodroid.app.design.gap
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -27,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         viewModelFactory { initializer { LauncherViewModel(graph, createSavedStateHandle()) } }
     }
     private val client by lazy { graph.client() }
-    private var lastDestination: Destination? = null
+    private lateinit var page: PageBuilder
     private lateinit var binding: ActivityMainBinding
     private val exportDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
         if (uri != null) {
@@ -37,9 +44,20 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(StudioTheme.background), navigationBarStyle = SystemBarStyle.dark(StudioTheme.background))
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        page = PageBuilder(this, binding.content)
+        binding.navigation.layoutParams = binding.navigation.layoutParams.apply {
+            width = dp(minOf(312, (resources.configuration.screenWidthDp * 0.88f).toInt()))
+        }
+        binding.navigation.addHeaderView(column(24).apply {
+            addView(icon(this@MainActivity, R.drawable.ic_launcher, StudioTheme.cyan, 48))
+            gap(18); line(label("StudioDroid", 24f, StudioTheme.text, true))
+            line(label("RUNTIME WORKSPACE", 11f, StudioTheme.cyan, true), 6)
+            line(label("v2.0.0-m1  /  FOUNDATION", 11f, StudioTheme.muted), 12)
+            gap(12)
+        })
         ViewCompat.setOnApplyWindowInsetsListener(binding.mainPanel) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
             view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
@@ -65,13 +83,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
     override fun onStart() { super.onStart(); client.connect() }
-    override fun onStop() { client.disconnect(); model.onHidden(); binding.content.removeAllViews(); super.onStop() }
+    override fun onStop() { client.disconnect(); model.onHidden(); page.clear(); super.onStop() }
     private fun render(state: LauncherUiState) {
         binding.toolbar.title = getString(title(state.destination))
         binding.navigation.setCheckedItem(menuId(state.destination))
-        val scrollY = if (lastDestination == state.destination) (binding.content.getChildAt(0) as? NestedScrollView)?.scrollY ?: 0 else 0
-        lastDestination = state.destination
-        val page = PageBuilder(this, binding.content)
+        page.begin(state.destination.name)
         if (state.message != null) page.notice(state.message)
         state.runtime.probeError?.let(page::notice)
         val actions = ScreenActions(model::refresh, { exportDocument.launch("studiodroid-diagnostics.zip") }, model::setProfile)
@@ -84,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             Destination.SETTINGS -> Settings.render(page, state, actions)
             Destination.ABOUT -> About.render(page, state, actions)
         }
-        binding.content.getChildAt(0)?.let { view -> view.post { view.scrollTo(0, scrollY) } }
+        page.commit()
     }
     private fun menuId(destination: Destination): Int = when (destination) {
         Destination.HOME -> R.id.nav_home; Destination.RUNTIME -> R.id.nav_runtime; Destination.DIAGNOSTICS -> R.id.nav_diagnostics
