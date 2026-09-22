@@ -32,3 +32,12 @@ reuse must be recorded with source URL, revision, paths, changes and license.
 Roblox and Roblox Studio are trademarks of Roblox Corporation. No Roblox code,
 assets, binaries, authentication material, or signing secrets are distributed
 here. StudioDroid is not affiliated with or endorsed by Roblox Corporation.
+
+M1 build tooling and application dependencies
+-------------------------------------------
+The Gradle 8.13 wrapper scripts and JAR are redistributed from the upstream v8.13.0
+source tag. Its license notices are preserved in third_party/gradle/LICENSE and in
+the wrapper scripts. The official wrapper SHA-256 is checked by Android CI.
+Kotlin, kotlinx.coroutines, AndroidX and Material Components are resolved from their
+official Maven repositories; their upstream license obligations continue to apply.
+No Vodka/Zalith/Termux:X11 runtime code or Roblox binaries are incorporated in M1.

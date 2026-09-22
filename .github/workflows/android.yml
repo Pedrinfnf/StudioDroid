@@ -1,0 +1,67 @@
+name: Android foundation
+on:
+  push:
+    branches: [main, 'm1/**']
+    paths: ['app/**', 'core/**', 'runtime/android/**', 'gradle/**', '*.gradle.kts', 'gradle.properties', 'gradlew*', 'schemas/**', 'tests/**', 'scripts/**', 'docs/**', '.github/workflows/android.yml']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4
+      - name: Validate Gradle wrapper identity
+        run: echo '81a82aaea5abcc8ff68b3dfcb58b3c3c429378efd98e7433460610fecd7ae45f  gradle/wrapper/gradle-wrapper.jar' | sha256sum --check
+      - name: Validate M0 contracts
+        env:
+          PYRSISTENT_SKIP_EXTENSION: '1'
+        run: |
+          python -m pip install -r tests/m0/requirements.txt
+          python -u scripts/validate_m0.py
+      - name: Install pinned Android SDK components
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Validate Gradle configuration
+        run: ./gradlew --no-daemon help
+      - name: Unit tests, lint and debug APKs
+        run: ./gradlew --no-daemon :core:test :runtime:android:testDebugUnitTest :app:testDebugUnitTest :app:lintDebug :app:assembleDebug :app:assembleDebugAndroidTest
+      - name: Verify debug APK signature
+        run: "$ANDROID_HOME/build-tools/36.0.0/apksigner verify --verbose app/build/outputs/apk/debug/app-debug.apk"
+      - name: Record APK checksum
+        run: sha256sum app/build/outputs/apk/debug/app-debug.apk > app/build/outputs/apk/debug/app-debug.apk.sha256
+      - name: Upload UI preview APK
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: StudioDroid-M1-debug-${{ github.run_number }}
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/debug/app-debug.apk.sha256
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload validation reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: M1-validation-${{ github.run_number }}
+          path: |
+            core/build/reports/tests/
+            runtime/android/build/reports/tests/
+            app/build/reports/
+            app/build/outputs/apk/androidTest/
+          if-no-files-found: warn
+          retention-days: 14

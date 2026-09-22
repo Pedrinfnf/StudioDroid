@@ -1,0 +1,8 @@
+cmake_minimum_required(VERSION 3.22)
+project(studiodroid_boundary LANGUAGES CXX)
+if(NOT ANDROID OR NOT ANDROID_ABI STREQUAL "arm64-v8a")
+    message(FATAL_ERROR "The M1 native boundary targets Android ARM64 only")
+endif()
+add_library(studiodroid_boundary STATIC bridge/bridge_contract.cpp)
+target_compile_features(studiodroid_boundary PRIVATE cxx_std_17)
+target_compile_options(studiodroid_boundary PRIVATE -Wall -Wextra -Werror)

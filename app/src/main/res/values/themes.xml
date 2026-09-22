@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.StudioDroid" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#3957A5</item>
+        <item name="colorSecondary">#506273</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

@@ -6,14 +6,13 @@ without the previous RobloxDroid internals.
 
 ## Current status
 
-**M0: architecture, research records, metadata schemas, and acceptance policy.**
-There is no Android application, Gradle build, JNI implementation, installed runtime,
-or demonstrated Studio execution in this repository yet. Schemas describe contracts;
-they do not implement validation or establish runtime compatibility.
+**M1: Android launcher foundation.** Kotlin/Material 3 navigation, real Android capability
+observations, conservative memory policies, bounded logs, settings and diagnostic export.
+The three modules are `:app`, `:core`, and `:runtime:android`.
 
-M1 requires separate approval. The approved first implementation tranche ends at M4:
-verified FEX execution of x86_64 Linux programs in the installed APK's own context on
-physical Android ARM64 hardware, including a 4 GB device. Wine and Studio follow later.
+Runtime execution, containers, Wine, graphics translation/drivers, Studio installation and
+NativeSurfaceBackend implementation are unavailable. No Studio compatibility or physical
+4 GB qualification is claimed. M2 requires separate approval.
 
 ## Architecture
 
@@ -33,9 +32,16 @@ distinguish architectural commitments from unverified mechanisms.
 
 ## Building and validation
 
-M0 has no APK/build command. Do not interpret empty source directories as implemented
-modules. Future build tools and independent runtime pipelines are specified in
-[Build and CI](docs/BUILD_AND_CI.md).
+Use JDK 17 and Android SDK 36 on a supported build host:
+
+```sh
+./gradlew :core:test :runtime:android:testDebugUnitTest :app:testDebugUnitTest :app:lintDebug :app:assembleDebug
+```
+
+The debug APK is `app/build/outputs/apk/debug/app-debug.apk`. Android CI also uploads it
+with a SHA-256 checksum. See [M1 validation](docs/M1_VALIDATION.md) for actual results,
+local-host limitations and instrumentation commands. Independent pipelines are described
+in [Build and CI](docs/BUILD_AND_CI.md).
 
 The four files in `schemas/` use JSON Schema Draft 2020-12. Validate their schemas with
 a conforming validator, check local Markdown links and `git diff --check`, and enforce

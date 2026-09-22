@@ -1,16 +1,17 @@
 # Build and CI architecture
 
-Status: M0 plan. No build scripts, Gradle wrapper, Android sources or workflows are
-introduced until their milestones. M1 requires separate approval.
+Status: M1 application, Gradle and CI foundation implemented. Later pipeline rows remain
+planned; M2 is not started. See [M1 validation](M1_VALIDATION.md).
 
 ## Initial application baseline (M1)
 
 Kotlin, Material 3 Views, ViewModels, StateFlow and lifecycle-aware collection. Modules:
 `:app`, `:core`, `:runtime:android`. Android minSdk 29, compileSdk 36, targetSdk 36,
 arm64-v8a only. JDK 17, Gradle 8.13, AGP 8.13.2; NDK r28 with 16 KiB-compatible packaging.
-Pin the exact Kotlin/AndroidX/Material versions, NDK patch, toolchain distributions and
-verification hashes in the version catalog/build lock during M1. Do not claim those
-unresolved dependencies are reproducible in M0.
+M1 pins Kotlin 2.2.20, coroutines 1.10.2, AndroidX and Material versions in the version
+catalog, Build Tools 36.0.0, and NDK r28c 28.2.13676358. The Gradle distribution and wrapper
+JAR have verified upstream SHA-256 values. CI actions are pinned to commit SHAs. Full
+independent repeat-build reproducibility is not established by these version pins.
 
 [AGP compatibility](https://developer.android.com/build/releases/agp-8-13-0-release-notes)
 documents the Gradle/JDK pair. [Android page sizes](https://developer.android.com/guide/practices/page-sizes)
@@ -69,3 +70,17 @@ The four existing `.gitkeep` files remain. Generated rootfs/test ELF/native libr
 reports, signatures and SBOMs belong in build/artifact outputs, not source. `.gitignore`
 permits a future Gradle wrapper JAR while continuing to exclude generated JARs, payloads
 and local signing material. Schema tests are M0 validation, not an installer implementation.
+
+## M1 workflow scope
+
+`android.yml` validates M0, Gradle configuration, core/runtime/app unit tests, Android lint,
+debug APK assembly and instrumentation APK compilation. It verifies the debug APK signature
+and uploads APK/checksum/reports. Instrumentation execution requires an Android device;
+compiling its APK is not a passing lifecycle test.
+
+`native.yml` compiles a JNI type/ABI boundary against the pinned Android ARM64 NDK and
+CMake 3.22.1. This compile-only static library is neither packaged nor loaded by M1.
+NativeBridge reports Unimplemented; no native executable, container or graphics function
+is provided. App ABI filters and controller checks target ARM64; the Java-only foundation
+APK itself has no native ABI payload and may install elsewhere, where execution remains
+unsupported. No M2 payload or runtime build workflow is introduced.

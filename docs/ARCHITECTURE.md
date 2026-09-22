@@ -1,6 +1,7 @@
 # StudioDroid v2 architecture
 
-Status: approved M0 design. No runtime implementation or device qualification exists yet.
+Status: approved M0 design with the M1 launcher/control-plane foundation. Execution
+backends and physical-device qualification remain unavailable.
 
 ## Product and boundaries
 
