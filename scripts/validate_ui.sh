@@ -21,17 +21,21 @@ adb shell wm size 1920x1080
 ./gradlew --no-daemon :app:connectedDebugAndroidTest \
     -Pandroid.testInstrumentationRunnerArguments.class=org.studiodroid.app.LauncherVisualTest \
     -Pandroid.testInstrumentationRunnerArguments.visualVariant=landscape
+adb shell wm size 1600x2560
+./gradlew --no-daemon :app:connectedDebugAndroidTest \
+    -Pandroid.testInstrumentationRunnerArguments.class=org.studiodroid.app.LauncherVisualTest \
+    -Pandroid.testInstrumentationRunnerArguments.visualVariant=tablet
 adb shell wm size reset
 adb pull /sdcard/Download/studiodroid-qa app/build/reports/ui/captures
 python3 - <<'CHECK_CAPTURES'
 from pathlib import Path
 names = {p.name for p in Path('app/build/reports/ui/captures').rglob('*.png') if p.stat().st_size > 1024}
-for variant in ('phone', 'large-font', 'landscape'):
+for variant in ('phone', 'large-font', 'landscape', 'tablet'):
     for page in ('home', 'runtime', 'diagnostics', 'storage', 'logs', 'settings', 'about'):
         assert f'{variant}-{page}.png' in names, (variant, page)
         assert f'{variant}-{page}-bottom.png' in names, (variant, page, 'bottom')
     assert f'{variant}-drawer.png' in names, variant
-print('Verified 45 non-empty UI captures')
+print('Verified 60 non-empty UI captures')
 CHECK_CAPTURES
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb shell am start -W -n org.studiodroid.app/.MainActivity

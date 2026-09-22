@@ -14,7 +14,7 @@ object Diagnostics {
         page.secondary(if (state.runtime.refreshing) "Reading device…" else "Refresh observations", !state.busy && !state.runtime.refreshing, action = actions.refresh)
         page.metrics(
             Metric("CPU / SOC", observation(d?.soc), R.drawable.ic_cpu, badge = observedBadge(d?.soc)),
-            Metric("ARCHITECTURE", d?.let { if (it.supportsArm64) "ARM64" else it.supportedAbis.firstOrNull() ?: "Unknown" } ?: "Unknown", R.drawable.ic_runtime, d?.let { "${if(it.process64Bit) "64" else "32"}-bit process" }),
+            Metric("PRIMARY ABI", d?.supportedAbis?.firstOrNull()?.let { if (it == "arm64-v8a") "ARM64" else it } ?: "Unknown", R.drawable.ic_runtime, d?.let { "${if(it.process64Bit) "64" else "32"}-bit process" }),
             Metric("ANDROID", d?.androidVersion ?: "Unknown", R.drawable.ic_home, d?.let { "API ${it.androidApi}" }),
             Metric("PAGE SIZE", bytes(d?.pageSize?.valueOrNull()), R.drawable.ic_memory, badge = observedBadge(d?.pageSize)),
         )

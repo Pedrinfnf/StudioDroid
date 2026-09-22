@@ -6,8 +6,7 @@ import org.studiodroid.app.LauncherUiState
 object Logs {
     fun render(page: PageBuilder, state: LauncherUiState, actions: ScreenActions) {
         page.section("Event stream", "Newest first · device local time · maximum 16 KiB")
-        page.secondary("Refresh events", !state.busy, action = actions.refresh)
-        page.rawLogs(state.logTail)
+        page.logActions(state.logTail, !state.busy, actions.refresh)
         page.note("retention", "Disk-backed and rotated. This view clears when the launcher is hidden.")
         page.logs(state.logTail)
     }

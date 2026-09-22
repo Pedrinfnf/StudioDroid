@@ -87,29 +87,49 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
     fun hero(title: String, subtitle: String, badge: Badge, detail: String) = row("hero", listOf(title, subtitle, badge, detail)) {
         context.column(16).apply {
             background = context.shape(raised, 0xFF315078.toInt(), 16)
-            line(LinearLayout(context).apply {
+            val wide = context.resources.configuration.screenWidthDp >= 600 && context.resources.configuration.fontScale <= 1.3f
+            val identity = LinearLayout(context).apply {
                 gravity = Gravity.CENTER_VERTICAL
                 addView(icon(context, R.drawable.ic_launcher, cyan, 40))
                 addView(context.column().apply {
                     line(context.label(title, 22f, StudioTheme.text, true))
                     line(context.label(subtitle, 11f, muted), 5)
                 }, LinearLayout.LayoutParams(0, -2, 1f).apply { marginStart = context.dp(12) })
-            })
-            addView(StatusChip(context, badge), LinearLayout.LayoutParams(-2, -2).apply { topMargin = context.dp(14) })
-            line(context.label(detail, 12f, muted), 8)
+            }
+            val status = context.column().apply {
+                addView(StatusChip(context, badge), LinearLayout.LayoutParams(-2, -2))
+                line(context.label(detail, 12f, muted), 8)
+            }
+            if (wide) line(LinearLayout(context).apply {
+                gravity = Gravity.CENTER_VERTICAL
+                addView(identity, LinearLayout.LayoutParams(0, -2, 1.2f))
+                addView(status, LinearLayout.LayoutParams(0, -2, 1f).apply { marginStart = context.dp(20) })
+            }) else { line(identity); line(status, 14) }
         }
     }
     fun profiles(selected: DeviceProfile?, enabled: Boolean, action: (DeviceProfile?) -> Unit) {
         val choices = listOf(
             Triple<DeviceProfile?, String, String>(null, "Automatic", "Recommended · safe defaults for this device"),
-            Triple(DeviceProfile.LOW_MEMORY, "Low memory", "Conservative memory and I/O budgets · built for 4 GB"),
+            Triple(DeviceProfile.LOW_MEMORY, "Low memory", "Conservative resource budgets · designed for 4 GB"),
             Triple(DeviceProfile.BALANCED, "Balanced", "Balanced budgets for most devices"),
             Triple(DeviceProfile.PERFORMANCE, "Performance", "Higher budgets on qualified devices"),
         )
-        choices.forEach { (profile, title, detail) -> row("profile-$title", listOf(selected == profile, enabled)) {
-            ProfileOption(context, title, detail, if (profile == DeviceProfile.PERFORMANCE) R.drawable.ic_bolt else R.drawable.ic_memory, selected == profile, enabled) { action(profile) }
-        } }
+        val wide = context.resources.configuration.screenWidthDp >= 600 && context.resources.configuration.fontScale <= 1.3f
+        choices.chunked(if (wide) 2 else 1).forEach { group ->
+            row("profiles-${group.first().second}", listOf(group.map { selected == it.first }, enabled)) {
+                LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    group.forEachIndexed { index, (profile, title, detail) ->
+                        addView(ProfileOption(context, title, detail,
+                            if (profile == DeviceProfile.PERFORMANCE) R.drawable.ic_bolt else R.drawable.ic_memory,
+                            selected == profile, enabled) { action(profile) },
+                            LinearLayout.LayoutParams(0, -1, 1f).apply { if(index > 0) marginStart = context.dp(10) })
+                    }
+                }
+            }
+        }
     }
+
     fun logs(tail: String) {
         if (cachedTail != tail) { cachedTail = tail; cachedEntries = LogPresentation.parse(tail) }
         val entries = cachedEntries
@@ -118,16 +138,32 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
             context.column(14).apply {
                 background = context.shape(StudioTheme.surface, border, 12)
                 val tone = when (entry.category) { "ANDROID" -> Tone.INFO; "STORAGE", "NETWORK" -> Tone.PLANNED; else -> Tone.NEUTRAL }
-                line(TechnicalValue(context, entry.time, 12f).apply { setTextColor(muted) })
-                addView(StatusChip(context, Badge(entry.category, tone)), LinearLayout.LayoutParams(-2, -2).apply { topMargin = context.dp(8) })
+                line(LinearLayout(context).apply {
+                    gravity = Gravity.CENTER_VERTICAL
+                    addView(TechnicalValue(context, entry.time, 12f).apply { setTextColor(muted) }, LinearLayout.LayoutParams(0, -2, 1f))
+                    addView(StatusChip(context, Badge(entry.category, tone)), LinearLayout.LayoutParams(-2, -2).apply { marginStart = context.dp(12) })
+                })
                 line(TechnicalValue(context, entry.code.replace('_', ' '), 13f), 10)
                 entry.session?.let { line(context.label("Session $it", 11f, muted), 8) }
                 entry.value?.let { line(context.label("Value: $it", 12f, muted), 6) }
             }
         } }
     }
-    fun rawLogs(tail: String) {
-        row("raw-json", tail) { SecondaryAction(context, "Raw JSON / copy", tail.isNotEmpty(), R.drawable.ic_logs) {
+    fun logActions(tail: String, enabled: Boolean, refresh: () -> Unit) {
+        row("log-actions", listOf(tail, enabled)) {
+            LinearLayout(context).apply {
+                val compact = context.resources.configuration.screenWidthDp >= 360 && context.resources.configuration.fontScale <= 1.3f
+                orientation = if (compact) LinearLayout.HORIZONTAL else LinearLayout.VERTICAL
+                addView(SecondaryAction(context, "Refresh", enabled, R.drawable.ic_refresh, refresh),
+                    LinearLayout.LayoutParams(if (compact) 0 else -1, -2, if (compact) 1f else 0f))
+                addView(SecondaryAction(context, "Raw JSON", tail.isNotEmpty(), R.drawable.ic_logs) { showRawLogs(tail) },
+                    LinearLayout.LayoutParams(if (compact) 0 else -1, -2, if (compact) 1f else 0f).apply {
+                        if (compact) marginStart = context.dp(10) else topMargin = context.dp(10)
+                    })
+            }
+        }
+    }
+    private fun showRawLogs(tail: String) {
             val raw = tail.take(16 * 1024)
             val rawList = RecyclerView(context).apply {
                 layoutManager = LinearLayoutManager(context)
@@ -144,7 +180,6 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
             MaterialAlertDialogBuilder(context).setTitle("Raw log tail · 16 KiB max").setView(rawList)
                 .setPositiveButton("Copy") { _, _ -> context.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("StudioDroid log tail", raw)) }
                 .setNegativeButton("Close", null).show()
-        } }
     }
     fun link(title: String, detail: String, url: String) {
         row("link-$title", listOf(title, detail, url)) {

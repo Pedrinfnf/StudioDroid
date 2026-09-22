@@ -64,7 +64,7 @@ class LauncherVisualTest {
             awaitIdle(scenario)
             scenario.onActivity { activity ->
                 val list = activity.findViewById<RecyclerView>(R.id.launcher_list)
-                list.scrollToPosition(2)
+                list.scrollToPosition(1)
             }
             instrumentation.waitForIdleSync(); SystemClock.sleep(180)
             scenario.onActivity { activity ->
@@ -90,6 +90,7 @@ class LauncherVisualTest {
         assertNull(entries.last().session)
         assertNull(entries.last().value)
         assertTrue(LogPresentation.parse(" ").isEmpty())
+        assertEquals("Unknown time", LogPresentation.parse("{\"timestampMillis\":1.5}").single().time)
         assertTrue(LogPresentation.parse("{}\n".repeat(10000)).size <= 5462)
     }
     private fun awaitIdle(scenario: ActivityScenario<MainActivity>) {

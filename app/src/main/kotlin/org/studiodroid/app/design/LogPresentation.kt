@@ -14,7 +14,7 @@ object LogPresentation {
         return tail.take(16 * 1024).lineSequence().filter { it.isNotBlank() }.map { line ->
             try {
                 val json = JSONObject(line)
-                val timestamp = json.opt("timestampMillis") as? Number
+                val timestamp = (json.opt("timestampMillis") as? Number)?.takeIf { it is Long || it is Int }
                 LogEntry(timestamp?.toLong()?.takeIf { it >= 0 }?.let { format.format(Date(it)) } ?: "Unknown time",
                     json.optString("category", "UNKNOWN").take(48), json.optString("code", "UNKNOWN").take(160),
                     if (json.isNull("sessionId")) null else json.optString("sessionId").take(80),
