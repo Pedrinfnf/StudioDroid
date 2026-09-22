@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
         lastDestination = state.destination
         val page = PageBuilder(this, binding.content)
         if (state.message != null) page.notice(state.message)
-        if (state.runtime.probeError != null) page.notice(state.runtime.probeError)
+        state.runtime.probeError?.let(page::notice)
         val actions = ScreenActions(model::refresh, { exportDocument.launch("studiodroid-diagnostics.zip") }, model::setProfile)
         when (state.destination) {
             Destination.HOME -> Home.render(page, state, actions)

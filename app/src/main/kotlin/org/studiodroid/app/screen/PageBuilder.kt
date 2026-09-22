@@ -19,13 +19,13 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
     private val column = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(20), dp(12), dp(20), dp(24)) }
     init {
         host.removeAllViews()
-        host.addView(NestedScrollView(context).apply { isFillViewport = true; addView(column) }, ViewGroup.LayoutParams(-1, -1))
+        host.addView(NestedScrollView(context).apply { isFillViewport = true; addView(column, ViewGroup.LayoutParams(-1, -2)) }, ViewGroup.LayoutParams(-1, -1))
     }
     fun card(title: String, body: String) {
         val content = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL; setPadding(dp(20), dp(16), dp(20), dp(16)) }
         content.addView(text(title, 20f).apply { setTypeface(typeface, Typeface.BOLD) })
         content.addView(text(body, 15f).apply { setPadding(0, dp(8), 0, 0) })
-        column.addView(MaterialCardView(context).apply { addView(content); radius = dp(20).toFloat() }, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) })
+        column.addView(MaterialCardView(context).apply { addView(content, ViewGroup.LayoutParams(-1, -2)); radius = dp(20).toFloat() }, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(12) })
     }
     fun notice(message: String) = card("Launcher notice", message)
     fun button(label: String, enabled: Boolean = true, action: () -> Unit = {}) {

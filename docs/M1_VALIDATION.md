@@ -61,6 +61,11 @@ uses Maven Central's official repo1 endpoint; repository build configuration is 
 Local Gradle native/instrumentation integration was disabled only for the Termux host JVM;
 no Android target, runtime architecture or tool version was downgraded.
 
-Pending: final lint/APK/native CI and emulator lifecycle results, plus physical-device
+Native ARM64 boundary CI passed on commit `189ed38` using NDK r28c/CMake 3.22.1.
+Local app lint/assembly reached the official x86_64 AAPT2 executable and could not run it
+on Android ARM64; that executable was not replaced or patched. Android CI found a Kotlin
+cross-module nullable-property smart-cast error, now fixed with a safe nullable access.
+
+Pending: final lint/APK CI and emulator lifecycle results, plus physical-device
 UI and memory measurements. The CI emulator is x86_64 and cannot qualify ARM64 runtime
 compatibility; it tests only launcher UI lifecycle. The 4 GB memory budgets are design targets, not measured qualification.
