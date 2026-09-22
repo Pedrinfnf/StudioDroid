@@ -66,6 +66,21 @@ Local app lint/assembly reached the official x86_64 AAPT2 executable and could n
 on Android ARM64; that executable was not replaced or patched. Android CI found a Kotlin
 cross-module nullable-property smart-cast error, now fixed with a safe nullable access.
 
-Pending: final lint/APK CI and emulator lifecycle results, plus physical-device
-UI and memory measurements. The CI emulator is x86_64 and cannot qualify ARM64 runtime
-compatibility; it tests only launcher UI lifecycle. The 4 GB memory budgets are design targets, not measured qualification.
+Android CI on commit `78acd79` passed Gradle configuration, all 20 JVM tests, Android
+lint, debug APK/test APK assembly and debug signature verification. The UI APK is
+available in [Android run 35673425759](https://github.com/Pedrinfnf/StudioDroid/actions/runs/35673425759).
+The downloaded APK was independently checked with apksigner (v2 signature valid) and
+matches the CI SHA-256:
+
+```text
+e15d45194474c49e14630ad15807de6617e8f1773d96634481ebb2bda97b5f8f
+```
+
+The Activity recreation instrumentation test passed (one test, zero failures) in that run.
+The subsequent screenshot step failed because the app was no longer installed after the
+test task. CI now explicitly installs the built APK again before opening it for capture.
+
+Pending: verification of the corrected screenshot step, plus physical-device UI and memory
+measurements. The CI emulator is x86_64 and cannot qualify ARM64 runtime compatibility;
+it tests only launcher UI lifecycle. The 4 GB memory budgets are design targets, not
+measured qualification.

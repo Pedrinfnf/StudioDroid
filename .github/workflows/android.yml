@@ -73,6 +73,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -memory 2048
           script: |
             ./gradlew --no-daemon :app:connectedDebugAndroidTest
+            adb install -r app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -W -n org.studiodroid.app/.MainActivity
             adb shell input keyevent KEYCODE_HOME
             adb shell am start -W -n org.studiodroid.app/.MainActivity

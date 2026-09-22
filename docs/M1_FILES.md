@@ -1,0 +1,80 @@
+# M1 file inventory
+
+Baseline: `ba8f1a5`. `A` means created; `M` means modified.
+Generated build artifacts and local SDK/cache files are excluded.
+
+```text
+A	.github/workflows/android.yml
+A	.github/workflows/native.yml
+M	.gitignore
+M	NOTICE
+M	README.md
+A	app/build.gradle.kts
+A	app/src/androidTest/kotlin/org/studiodroid/app/LauncherLifecycleTest.kt
+A	app/src/main/AndroidManifest.xml
+A	app/src/main/kotlin/org/studiodroid/app/AppGraph.kt
+A	app/src/main/kotlin/org/studiodroid/app/LauncherViewModel.kt
+A	app/src/main/kotlin/org/studiodroid/app/MainActivity.kt
+A	app/src/main/kotlin/org/studiodroid/app/StudioDroidApp.kt
+A	app/src/main/kotlin/org/studiodroid/app/screen/About.kt
+A	app/src/main/kotlin/org/studiodroid/app/screen/Diagnostics.kt
+A	app/src/main/kotlin/org/studiodroid/app/screen/Home.kt
+A	app/src/main/kotlin/org/studiodroid/app/screen/Logs.kt
+A	app/src/main/kotlin/org/studiodroid/app/screen/PageBuilder.kt
+A	app/src/main/kotlin/org/studiodroid/app/screen/Runtime.kt
+A	app/src/main/kotlin/org/studiodroid/app/screen/Settings.kt
+A	app/src/main/kotlin/org/studiodroid/app/screen/Storage.kt
+A	app/src/main/res/drawable/ic_launcher.xml
+A	app/src/main/res/drawable/ic_menu.xml
+A	app/src/main/res/layout/activity_main.xml
+A	app/src/main/res/menu/navigation.xml
+A	app/src/main/res/values-night/themes.xml
+A	app/src/main/res/values/strings.xml
+A	app/src/main/res/values/themes.xml
+A	build.gradle.kts
+A	core/build.gradle.kts
+A	core/src/main/kotlin/org/studiodroid/core/Capabilities.kt
+A	core/src/main/kotlin/org/studiodroid/core/Components.kt
+A	core/src/main/kotlin/org/studiodroid/core/ContainerBackend.kt
+A	core/src/main/kotlin/org/studiodroid/core/DeviceProfilePolicy.kt
+A	core/src/main/kotlin/org/studiodroid/core/Diagnostics.kt
+A	core/src/main/kotlin/org/studiodroid/core/GraphicsContracts.kt
+A	core/src/main/kotlin/org/studiodroid/core/LaunchModels.kt
+A	core/src/main/kotlin/org/studiodroid/core/LaunchPlanner.kt
+A	core/src/main/kotlin/org/studiodroid/core/MemoryPolicy.kt
+A	core/src/main/kotlin/org/studiodroid/core/RuntimeBackend.kt
+A	core/src/main/kotlin/org/studiodroid/core/RuntimeController.kt
+A	core/src/main/kotlin/org/studiodroid/core/Sessions.kt
+A	core/src/test/kotlin/org/studiodroid/core/DeviceFixtures.kt
+A	core/src/test/kotlin/org/studiodroid/core/DeviceProfilePolicyTest.kt
+A	core/src/test/kotlin/org/studiodroid/core/LaunchPlannerTest.kt
+A	core/src/test/kotlin/org/studiodroid/core/MemoryPolicyTest.kt
+M	docs/ARCHITECTURE.md
+M	docs/BUILD_AND_CI.md
+A	docs/M1_FILES.md
+A	docs/M1_VALIDATION.md
+A	gradle.properties
+A	gradle/libs.versions.toml
+A	gradle/wrapper/gradle-wrapper.jar
+A	gradle/wrapper/gradle-wrapper.properties
+A	gradlew
+A	gradlew.bat
+A	native/CMakeLists.txt
+A	native/bridge/bridge_contract.cpp
+A	runtime/android/build.gradle.kts
+A	runtime/android/src/main/AndroidManifest.xml
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/AndroidCapabilityProbe.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/AndroidRuntimeController.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/DiagnosticExporter.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/MemoryPressureMonitor.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/NativeBridge.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/RotatingLogStore.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/RuntimeClient.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/RuntimeComposition.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/RuntimeService.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/SessionRepository.kt
+A	runtime/android/src/main/kotlin/org/studiodroid/runtime/android/SettingsRepository.kt
+A	runtime/android/src/test/kotlin/org/studiodroid/runtime/android/RotatingLogStoreTest.kt
+A	settings.gradle.kts
+A	third_party/gradle/LICENSE
+```
