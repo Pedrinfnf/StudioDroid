@@ -67,7 +67,11 @@ on Android ARM64; that executable was not replaced or patched. Android CI found 
 cross-module nullable-property smart-cast error, now fixed with a safe nullable access.
 
 Android CI on commit `78acd79` passed Gradle configuration, all 20 JVM tests, Android
-lint, debug APK/test APK assembly and debug signature verification. The UI APK is
+lint, debug APK/test APK assembly and debug signature verification. Lint reported zero
+errors and 20 warnings: 18 newer SDK/tool/dependency notices, the intentionally unsupported
+ChromeOS x86_64 ABI, and a recommendation for explicit Android 12+ data extraction rules.
+The approved toolchain is retained; allowBackup is false, while device-transfer behavior
+across OEMs is not validated. The UI APK is
 available in [Android run 35673425759](https://github.com/Pedrinfnf/StudioDroid/actions/runs/35673425759).
 The downloaded APK was independently checked with apksigner (v2 signature valid) and
 matches the CI SHA-256:
@@ -80,7 +84,35 @@ The Activity recreation instrumentation test passed (one test, zero failures) in
 The subsequent screenshot step failed because the app was no longer installed after the
 test task. CI now explicitly installs the built APK again before opening it for capture.
 
-Pending: verification of the corrected screenshot step, plus physical-device UI and memory
+The final preview build on `a7cb318` is available in
+[Android run 35674215423](https://github.com/Pedrinfnf/StudioDroid/actions/runs/35674215423).
+Its APK signature verified locally and its SHA-256 matches the CI artifact:
+
+```text
+c59f7540404ef06ffd2520de229192dfdfd0c74c6f2a8df1f1eaed915d3ab33a
+```
+
+All APK entry contents outside META-INF match the earlier preview. Fresh CI debug signing
+keys differ, so these previews cannot update each other in place. Keep the installed
+preview to test the same UI, or uninstall it (losing its local settings/logs) before
+installing the newer build. Stable release signing is not configured in M1.
+
+The complete Android workflow passed on `a7cb318`, including all 20 JVM tests, lint,
+APK assembly/signature, one Activity recreation test (zero failures), background/return
+commands and screenshot capture. The Home screenshot was visually inspected: content,
+system-bar insets, disabled launch, LOW_MEMORY profile and real available-memory reading
+rendered correctly. This single screenshot does not validate every screen or orientation.
+[Validation reports and screenshot](https://github.com/Pedrinfnf/StudioDroid/actions/runs/35674215423/artifacts/10671829305)
+and [debug APK](https://github.com/Pedrinfnf/StudioDroid/actions/runs/35674215423/artifacts/10672033888)
+are retained for 14 days. [Native ARM64 CI](https://github.com/Pedrinfnf/StudioDroid/actions/runs/35673148460)
+passed separately; native inputs are unchanged since that run.
+
+The final documentation-only commit records these results without rebuilding identical
+application sources. [Exact created/modified file inventory](M1_FILES.md) uses baseline
+`ba8f1a5`: 68 created, five modified. M0 schemas, fixtures, scripts and runtime manifests
+are unchanged. Final M0 checks include 58 local Markdown links; git diff --check passes.
+
+Pending: physical-device UI, orientation, process-death/SAF-export exercises and memory
 measurements. The CI emulator is x86_64 and cannot qualify ARM64 runtime compatibility;
 it tests only launcher UI lifecycle. The 4 GB memory budgets are design targets, not
 measured qualification.
