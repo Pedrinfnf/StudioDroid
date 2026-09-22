@@ -1,1 +1,1 @@
-<resources><style name="Shape.StudioDroid.Navigation"><item name="cornerFamily">rounded</item><item name="cornerSize">12dp</item></style><item name="launcher_list" type="id"/></resources>
+<resources><style name="Shape.StudioDroid.Navigation" parent=""><item name="cornerFamily">rounded</item><item name="cornerSize">12dp</item></style><item name="launcher_list" type="id"/></resources>
