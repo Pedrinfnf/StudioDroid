@@ -35,7 +35,8 @@ for variant in ('phone', 'large-font', 'landscape', 'tablet'):
         assert f'{variant}-{page}.png' in names, (variant, page)
         assert f'{variant}-{page}-bottom.png' in names, (variant, page, 'bottom')
     assert f'{variant}-drawer.png' in names, variant
-print('Verified 60 non-empty UI captures')
+assert 'phone-logs-raw.png' in names
+print('Verified 60 screen captures and the raw-log dialog')
 CHECK_CAPTURES
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb shell am start -W -n org.studiodroid.app/.MainActivity

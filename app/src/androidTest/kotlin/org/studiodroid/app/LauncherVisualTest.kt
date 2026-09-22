@@ -115,7 +115,7 @@ class LauncherVisualTest {
             assertTrue("Zero-width label: ${view.text}", view.width > 0)
         }
     }
-    private fun capture(name: String) {
+    internal fun capture(name: String) {
         val bitmap = checkNotNull(instrumentation.uiAutomation.takeScreenshot())
         val resolver = instrumentation.targetContext.contentResolver
         val values = ContentValues().apply {
