@@ -37,6 +37,8 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
     private val rows = mutableListOf<DisplayRow>()
     private var destination = ""
     private var changed = false
+    private var cachedTail = ""
+    private var cachedEntries = emptyList<LogEntry>()
     val list = RecyclerView(context).apply {
         id = R.id.launcher_list; layoutManager = LinearLayoutManager(context)
         adapter = this@PageBuilder.adapter; itemAnimator = null
@@ -46,7 +48,10 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
         setPadding(context.dp(margin), context.dp(4), context.dp(margin), context.dp(24))
     }
     init { host.addView(list, ViewGroup.LayoutParams(-1, -1)) }
-    fun begin(key: String) { rows.clear(); changed = destination != key; destination = key }
+    fun begin(key: String) {
+        rows.clear(); changed = destination != key; destination = key
+        if (key != "LOGS") { cachedTail = ""; cachedEntries = emptyList() }
+    }
     fun commit() {
         val switch = changed
         adapter.submitList(rows.toList()) {
@@ -56,7 +61,7 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
             }
         }
     }
-    fun clear() { rows.clear(); adapter.submitList(emptyList()); list.recycledViewPool.clear() }
+    fun clear() { rows.clear(); cachedTail = ""; cachedEntries = emptyList(); adapter.submitList(emptyList()); list.recycledViewPool.clear() }
     private fun row(key: String, content: Any, create: () -> View) { rows += DisplayRow("$destination/$key", content, create) }
     fun section(title: String, detail: String? = null) = row("section-$title", listOf(title, detail)) { SectionHeader(context, title, detail) }
     fun note(key: String, message: String) = row("note-$key", message) { context.label(message, 12f, muted).apply { setPadding(context.dp(2), 0, context.dp(2), context.dp(4)) } }
@@ -103,7 +108,8 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
         } }
     }
     fun logs(tail: String) {
-        val entries = LogPresentation.parse(tail)
+        if (cachedTail != tail) { cachedTail = tail; cachedEntries = LogPresentation.parse(tail) }
+        val entries = cachedEntries
         if (entries.isEmpty()) empty("empty-logs", "No entries yet", "Refresh to read the bounded log tail.", R.drawable.ic_logs, Badge("EMPTY"))
         entries.forEachIndexed { index, entry -> row("log-$index", entry) {
             context.column(14).apply {
@@ -118,17 +124,24 @@ class PageBuilder(private val context: Context, host: ViewGroup) {
         } }
     }
     fun rawLogs(tail: String) {
-        secondary("Raw JSON / copy", tail.isNotEmpty(), R.drawable.ic_logs) {
+        row("raw-json", tail) { SecondaryAction(context, "Raw JSON / copy", tail.isNotEmpty(), R.drawable.ic_logs) {
             val raw = tail.take(16 * 1024)
             val rawList = RecyclerView(context).apply {
                 layoutManager = LinearLayoutManager(context)
                 val rawAdapter = LauncherList(); adapter = rawAdapter
-                rawAdapter.submitList(raw.lineSequence().filter { it.isNotBlank() }.mapIndexed { i, line -> DisplayRow("raw-$i", line) { TechnicalValue(context, line, 12f).apply { setPadding(context.dp(16), context.dp(6), context.dp(16), context.dp(6)); setTextIsSelectable(true) } }.toList())
+                rawAdapter.submitList(raw.lineSequence().filter { it.isNotBlank() }.mapIndexed { i, line ->
+                    DisplayRow("raw-$i", line) {
+                        TechnicalValue(context, line, 12f).apply {
+                            setPadding(context.dp(16), context.dp(6), context.dp(16), context.dp(6))
+                            setTextIsSelectable(true)
+                        }
+                    }
+                }.toList())
             }
             MaterialAlertDialogBuilder(context).setTitle("Raw log tail · 16 KiB max").setView(rawList)
                 .setPositiveButton("Copy") { _, _ -> context.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("StudioDroid log tail", raw)) }
                 .setNegativeButton("Close", null).show()
-        }
+        } }
     }
     fun link(title: String, detail: String, url: String) {
         row("link-$title", listOf(title, detail, url)) {
